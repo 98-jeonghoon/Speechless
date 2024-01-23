@@ -2,6 +2,7 @@ import './App.css';
 
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { IndexPage } from './containers/IndexPage.tsx';
+import { MyPage } from './containers/user/MyPage.tsx';
 import { Header } from './containers/layout/Header.tsx';
 import { Footer } from './containers/layout/Footer.tsx';
 import { LoginPage } from './containers/user/LoginPage.tsx';
@@ -15,6 +16,7 @@ export default function App() {
 					<Routes>
 						<Route path='/' element={<IndexPage />} />
 						<Route path='/login' element={<LoginPage />} />
+						<Route path='/mypage' element={<MyPage />} />
 					</Routes>
 				</BrowserRouter>
 			</div>
