@@ -15,6 +15,8 @@ const navigationMenus = [
 	}
 ];
 
+const isLoggedIn = false;
+
 export const Header = () => {
 	return (
 		<Navbar fluid rounded className="py-4 border-b-2">
@@ -25,20 +27,26 @@ export const Header = () => {
 					</div>
 				</Navbar.Brand>
 				<div className="flex md:order-2">
-					<Dropdown
-						arrowIcon={false}
-						inline
-						label={
-							<Avatar alt="User settings" rounded />
-						}
-					>
-						<Dropdown.Header>
-							<span className="block text-sm">김대현</span>
-							<span className="block truncate text-sm font-medium">test@test.com</span>
-						</Dropdown.Header>
-						<Dropdown.Item>쪽지</Dropdown.Item>
-						<Dropdown.Item>로그아웃</Dropdown.Item>
-					</Dropdown>
+					{
+						(!isLoggedIn) ? (
+							<a className="text-xl font-medium" href="/login">
+								로그인
+							</a>
+						) : (
+							<Dropdown arrowIcon={false} inline label={
+								<Avatar alt="User settings" rounded />
+							}
+							>
+								<Dropdown.Header>
+									<span className="block text-sm">김대현</span>
+									<span className="block truncate text-sm font-medium">test@test.com</span>
+								</Dropdown.Header>
+								<Dropdown.Item>쪽지</Dropdown.Item>
+								<Dropdown.Item>로그아웃</Dropdown.Item>
+							</Dropdown>
+						)
+					}
+
 					<Navbar.Toggle />
 				</div>
 				<Navbar.Collapse>
