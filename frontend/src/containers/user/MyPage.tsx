@@ -84,11 +84,13 @@ export const MyPage = () => {
       </div>
 
       <div className="items-center w-3/5 p-24 m-5 border-2 rounded-3xl mx-auto">
+        <p className="text-2xl ml-4 mb-4">면접 사전 정보 관리</p>
         <EssayInputModal/>
         <MyPageList data={essayData}/>
       </div>
 
       <div className="items-center w-3/5 p-24 m-5 border-2 rounded-3xl mx-auto">
+        <p className="text-2xl ml-4 mb-4">완료한 면접 연습</p>
         <MyPageList data={MyPageData}/>
       </div>
     </>

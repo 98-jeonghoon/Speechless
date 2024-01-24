@@ -3,6 +3,16 @@ import { Button, Modal, TextInput } from 'flowbite-react';
 
 export const EssayInputModal: React.FC = () => {
     const [openModal, setOpenModal] = useState(false);
+    const [questions, setQuestions] = useState([{ question: '', answer: '' }]);
+    const addQuestion = () => {
+      setQuestions([...questions, { question: '', answer: '' }]);
+    };
+
+    const removeQuestion = (index:number) => {
+      const newQuestions = questions.slice(); // 배열 복사
+      newQuestions.splice(index, 1); // 특정 인덱스의 요소를 삭제
+      setQuestions(newQuestions); // 새로운 배열로 상태 업데이트
+    };
   
     return (
       <>
@@ -40,24 +50,36 @@ export const EssayInputModal: React.FC = () => {
               <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
                 자기소개서
               </p>
-              <div className="p-3 bg-primary-50">
+              {questions.map((_, index) => (
+                <div key={index} className="p-3 bg-primary-50">
                   <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                    문항
-                  </p>
-                  <TextInput />
-                  <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                    답변
-                  </p>
-                  <TextInput />
-              </div>
+                  문항
+                </p>
+                <TextInput id={`question-${index}`} value={questions[index].question} onChange={(e) => {
+                  const newQuestions = [...questions];
+                  newQuestions[index].question = e.target.value;
+                  setQuestions(newQuestions);
+                }} />
+                <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                  답변
+                </p>
+                <TextInput id={`answer-${index}`} value={questions[index].answer} onChange={(e) => {
+                  const newQuestions = [...questions];
+                  newQuestions[index].answer = e.target.value;
+                  setQuestions(newQuestions);
+                }} />
+                  <Button onClick={() => removeQuestion(index)} className="bg-negative-400 mt-2">
+                    삭제
+                  </Button>
+                </div>
+              ))}
+              <Button className="bg-primary-400" onClick={addQuestion}>문항 추가</Button>
+
   
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={() => setOpenModal(false)}>I accept</Button>
-            <Button color="gray" onClick={() => setOpenModal(false)}>
-              Decline
-            </Button>
+            <Button color="green" onClick={() => setOpenModal(false)}>I accept</Button>
           </Modal.Footer>
         </Modal>
       </>
