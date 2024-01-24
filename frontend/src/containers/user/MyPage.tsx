@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
-import {Button, List, Card, Avatar, Modal, TextInput } from 'flowbite-react';
+import React from 'react';
+import {Button, Card, Avatar } from 'flowbite-react';
+import { EssayInputModal } from './EssayInputModal';
+import { MyPageList } from '../../components/MyPageList';
 
 export const MyPage = () => {
   return (
@@ -73,133 +75,27 @@ export const MyPage = () => {
 
       <div className="items-center w-3/5 p-24 m-5 border-2 rounded-3xl mx-auto">
         <p className="text-2xl ml-4 mb-4">해야할 스피치 연습</p>
-        <InterviewList data={interviewData}/>
+        <MyPageList data={MyPageData}/>
       </div>
 
       <div className="items-center w-3/5 p-24 m-5 border-2 rounded-3xl mx-auto">
         <p className="text-2xl ml-4 mb-4">완료한 스피치 연습</p>
-        <InterviewList data={interviewData}/>
+        <MyPageList data={MyPageData}/>
       </div>
 
       <div className="items-center w-3/5 p-24 m-5 border-2 rounded-3xl mx-auto">
         <EssayInputModal/>
-        <InterviewList data={essayData}/>
+        <MyPageList data={essayData}/>
       </div>
 
       <div className="items-center w-3/5 p-24 m-5 border-2 rounded-3xl mx-auto">
-        <InterviewList data={interviewData}/>
+        <MyPageList data={MyPageData}/>
       </div>
     </>
   );
 };
-
-interface InterviewListProps {
-  data: Array<InterviewItemProps>;
-}
-
-const InterviewList: React.FC<InterviewListProps> = ({ data }: InterviewListProps) => (
-  <>
-    <List className="">
-      {data.map((item, idx) => (
-        <InterviewItem
-          key={idx}
-          title={item.title}
-          date={item.date}
-        />
-      ))}
-    </List>
-  </>
-);
-
-interface InterviewItemProps {
-  title: string;
-  date: string;
-}
-
-const InterviewItem: React.FC<InterviewItemProps> = ({ title, date}: InterviewItemProps) => (
-  <List.Item className="mt-4 p-4 flex bg-primary-50 border-2 shadow-sm rounded-3xl">
-    <div className="basis-1/2">
-      <p className="m-2 text-lg tracking-tight text-gray-900 dark:text-white w-full">
-        {title}
-      </p>
-    </div>
-    <div className="basis-1/4">
-      <p className="m-2 tracking-tight text-gray-900 dark:text-white w-full">
-        {date}
-      </p>
-    </div>
-
-    <div className="basis-1/4 flex flex-auto">
-      <Button className="m-2 bg-primary-400 text-white">{}</Button>
-      <Button className="m-2 bg-primary-400 text-white">{}</Button>
-    </div>
-  </List.Item>
-);
-
-const EssayInputModal: React.FC = () => {
-  const [openModal, setOpenModal] = useState(false);
-
-  return (
-    <>
-      <Button className="bg-primary-400" onClick={() => setOpenModal(true)}>Toggle modal</Button>
-      <Modal show={openModal} onClose={() => setOpenModal(false)}>
-        <Modal.Header>면접 사전 정보 편집</Modal.Header>
-        <Modal.Body>
-          <div className="space-y-6">
-            <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-              제목
-            </p>
-            <TextInput id="essay-title" />
-
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                  기업 이름
-                </p>
-                <TextInput id="essay-company-name" />
-              </div>
-              <div>
-                <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                  지원 포지션
-                </p>
-                <TextInput id="essay-position" />
-              </div>
-              <div>
-                <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                  경력
-                </p>
-                <TextInput placeholder="신입은 0 입력" id="essay-title" />
-              </div>
-            </div>
-
-            <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-              자기소개서
-            </p>
-            <div className="p-3 bg-primary-50">
-                <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                  문항
-                </p>
-                <TextInput />
-                <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                  답변
-                </p>
-                <TextInput />
-            </div>
-
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={() => setOpenModal(false)}>I accept</Button>
-          <Button color="gray" onClick={() => setOpenModal(false)}>
-            Decline
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </>
-  );
-}
   
-const interviewData = [
+const MyPageData = [
   {
     title: "자유주제 5분 스피치",
     date: "2024.01.19 17:00",
