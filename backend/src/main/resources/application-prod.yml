@@ -1,0 +1,76 @@
+---
+# port
+server:
+  port: 8080
+  shutdown: graceful
+---
+
+# database
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/speechless?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: a806
+    password: deer4
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+---
+
+# jpa
+spring:
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        default_batch_fetch_size: 30
+  #    open-in-view: false
+
+---
+# OAuth/Kakao
+oauth:
+  kakao:
+    client-id: a52b3bc01d737c12c1065ba8f9f80a2f
+    redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+    client-secret: JydFjc5VsYene4GoVcD59bNeI8OPYkI8
+
+---
+    
+---
+# OAuth/Naver
+oauth:
+  naver:
+    client-id: Ii15No4XMAz6CgZXVktp
+    redirect-uri: http://localhost:8080/login/oauth2/code/naver
+    client-secret: VpURMAXs1t
+
+---
+
+  # OAuth/Google
+oauth:
+  google:
+    client-id: 580707749371-iknisgckqss3tn03fet7ac1s3j57qore.apps.googleusercontent.com
+    redirect-uri: http://localhost:8080/login/oauth2/code/google
+    client-secret: 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
+
+---
+
+# jwt
+jwt:
+  secret-key: this1-is2-speechless3-test4-secret5-key6
+  access-token-expiration-time: 12341234
+  refresh-token-expiration-time: 12341234
+    
+---
+# log
+logging:
+  level:
+    org.hibernate.SQL: error
+    org.hibernate.type: error

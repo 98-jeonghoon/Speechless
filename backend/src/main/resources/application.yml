@@ -1,0 +1,27 @@
+---
+# application
+spring:
+  profiles:
+    active: prod, local
+
+# Context path
+---
+server:
+  servlet:
+    context-path: /speechless
+
+# SpringDoc Swagger
+---
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+---
+api-keys:
+  gpt: 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
+  pronounce: e4c9309f-70fb-49b5-acd3-938a368ff5b6
+  stt:
+    secret-key: e7fe8b875a764847bb0eca7d5e11d2a3
+    invoke-url: https://clovaspeech-gw.ncloud.com/external/v1/6810/5533df48df09b92dd856faaba26195b2a8c76660eab472d140cae7f81b7f7c05
