@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Button, Modal, TextInput } from 'flowbite-react';
+import { Statement } from '../../types/MyPage';
 
 export const EssayInputModal: React.FC = () => {
 	const [openModal, setOpenModal] = useState(false);
-	const [questions, setQuestions] = useState([{ question: '', answer: '' }]);
+	const [questions, setQuestions] = useState<Statement[]>([]);
 	const addQuestion = () => {
 		setQuestions([...questions, { question: '', answer: '' }]);
 	};

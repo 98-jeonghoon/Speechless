@@ -1,7 +1,7 @@
 import React from 'react';
-import { Button, Card, Avatar } from 'flowbite-react';
+import { Button, Card, Avatar, List } from 'flowbite-react';
 import { EssayInputModal } from './EssayInputModal';
-import { MyPageList } from '../../components/MyPageList';
+import { MyPageItem } from '../../components/MyPageItem';
 
 export const MyPage = () => {
 	return (
@@ -78,23 +78,39 @@ export const MyPage = () => {
 
 			<div className='items-center w-3/5 p-24 m-5 border-2 rounded-3xl mx-auto'>
 				<p className='text-2xl ml-4 mb-4'>해야할 스피치 연습</p>
-				<MyPageList data={MyPageData} />
+				<List>
+					{MyPageData.map((item, idx) => (
+						<MyPageItem key={idx} title={item.title} date={item.date} />
+					))}
+				</List>
 			</div>
 
 			<div className='items-center w-3/5 p-24 m-5 border-2 rounded-3xl mx-auto'>
 				<p className='text-2xl ml-4 mb-4'>완료한 스피치 연습</p>
-				<MyPageList data={MyPageData} />
+				<List>
+					{MyPageData.map((item, idx) => (
+						<MyPageItem key={idx} title={item.title} date={item.date} />
+					))}
+				</List>
 			</div>
 
 			<div className='items-center w-3/5 p-24 m-5 border-2 rounded-3xl mx-auto'>
 				<p className='text-2xl ml-4 mb-4'>면접 사전 정보 관리</p>
 				<EssayInputModal />
-				<MyPageList data={essayData} />
+				<List>
+					{essayData.map((item, idx) => (
+						<MyPageItem key={idx} title={item.title} date={item.date} />
+					))}
+				</List>
 			</div>
 
 			<div className='items-center w-3/5 p-24 m-5 border-2 rounded-3xl mx-auto'>
 				<p className='text-2xl ml-4 mb-4'>완료한 면접 연습</p>
-				<MyPageList data={MyPageData} />
+				<List>
+					{MyPageData.map((item, idx) => (
+						<MyPageItem key={idx} title={item.title} date={item.date} />
+					))}
+				</List>
 			</div>
 		</>
 	);
