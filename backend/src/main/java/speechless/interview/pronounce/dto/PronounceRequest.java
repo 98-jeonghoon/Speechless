@@ -1,6 +1,8 @@
-package speechless.common.dto;
+package speechless.interview.pronounce.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor

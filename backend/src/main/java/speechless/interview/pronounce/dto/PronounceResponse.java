@@ -1,4 +1,4 @@
-package speechless.common.dto;
+package speechless.interview.pronounce.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PronounceResponse {
 
-    private ReturnObject return_object;
+    private ReturnObject returnObject;
 
     @Getter
     @JsonIgnoreProperties(ignoreUnknown = true)
