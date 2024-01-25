@@ -11,7 +11,7 @@ export default function App() {
 	return (
 		<>
 			<Header />
-			<div className="w-full max-w-[1400px] mx-auto my-8">
+			<div className='w-full max-w-[1400px] mx-auto my-8'>
 				<BrowserRouter>
 					<Routes>
 						<Route path='/' element={<IndexPage />} />
