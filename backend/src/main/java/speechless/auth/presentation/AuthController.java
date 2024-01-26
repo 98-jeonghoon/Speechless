@@ -31,6 +31,8 @@ public class AuthController {
             @Parameter(description = "인가 코드", required = true, schema = @Schema(type = "string")) @RequestParam("code") String authCode,
             @Parameter(description = "리다이렉트 URI", required = true, schema = @Schema(type = "string"))@RequestParam("redirect-uri") String redirectUri
     ) {
+        System.out.println(authCode);
+        System.out.println(redirectUri);
         TokenDto tokenDto = authServiceFacade.login(authCode, redirectUri);
 
         String memberId = jwtProvider.getPayload(tokenDto.accessToken());
