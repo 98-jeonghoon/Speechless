@@ -1,19 +1,44 @@
 import React, { useState } from 'react';
 import { Button, Modal, TextInput } from 'flowbite-react';
-import { Statement } from '../../types/MyPage';
+import { Statement } from '../../types/Statement';
+
+
 
 export const EssayInputModal: React.FC = () => {
 	const [openModal, setOpenModal] = useState(false);
-	const [questions, setQuestions] = useState<Statement[]>([]);
-	const addQuestion = () => {
-		setQuestions([...questions, { question: '', answer: '' }]);
+
+const [formData, setFormData] = useState<Statement>(
+	{
+		title: '',
+		company: '',
+		position: '',
+		career: '',
+		questions: [{ question: '', answer: '' }],
+	}
+	);
+
+	  
+	const updateStringField = (field:string, value:string) => {
+		setFormData(prev => ({ ...prev, [field]: value }));
 	};
 
-	const removeQuestion = (index: number) => {
-		const newQuestions = questions.slice(); // 배열 복사
-		newQuestions.splice(index, 1); // 특정 인덱스의 요소를 삭제
-		setQuestions(newQuestions); // 새로운 배열로 상태 업데이트
-	};
+	const updateQuestionField = (field:JSON, value:Statement[]) => {
+		
+	}
+
+	// const addQuestion = () => {
+	// 	updateField('questions', [questions: [{ question: '', answer: '' }]]);
+	// };
+
+	// const removeQuestion = (index: number) => {
+	// 	const newQuestions = formData.questions.slice();
+	// 	newQuestions.splice(index, 1);
+	// 	updateField('questions', newQuestions);
+	// };
+
+	const CreateStatement = () => {
+		console.log(formData);
+	}
 
 	return (
 		<>
@@ -25,22 +50,20 @@ export const EssayInputModal: React.FC = () => {
 				<Modal.Body>
 					<div className='space-y-6'>
 						<p className='text-base leading-relaxed text-gray-500 dark:text-gray-400'>제목</p>
-						<TextInput id='essay-title' />
+						<TextInput value={formData.title} onChange={(e) => updateStringField('title', e.target.value)}/>
 
 						<div className='grid grid-cols-3 gap-4'>
 							<div>
 								<p className='text-base leading-relaxed text-gray-500 dark:text-gray-400'>기업 이름</p>
-								<TextInput id='essay-company-name' />
+								<TextInput value={formData.company} onChange={(e) => updateStringField('company', e.target.value)}/>
 							</div>
 							<div>
-								<p className='text-base leading-relaxed text-gray-500 dark:text-gray-400'>
-									지원 포지션
-								</p>
-								<TextInput id='essay-position' />
+								<p className='text-base leading-relaxed text-gray-500 dark:text-gray-400'>지원 포지션</p>
+								<TextInput value={formData.position} onChange={(e) => updateStringField('position', e.target.value)}/>
 							</div>
 							<div>
 								<p className='text-base leading-relaxed text-gray-500 dark:text-gray-400'>경력</p>
-								<TextInput placeholder='신입은 0 입력' id='essay-title' />
+								<TextInput value={formData.career} onChange={(e) => updateStringField('career', e.target.value)}/>
 							</div>
 						</div>
 
@@ -67,9 +90,12 @@ export const EssayInputModal: React.FC = () => {
 										setQuestions(newQuestions);
 									}}
 								/>
-								<Button onClick={() => removeQuestion(index)} className='bg-negative-400 mt-2'>
-									삭제
-								</Button>
+								{questions.length > 1 && (
+									<Button onClick={() => removeQuestion(index)} className='bg-negative-400 mt-2'>
+										삭제
+									</Button>
+        						)}
+
 							</div>
 						))}
 						<Button className='bg-primary-400' onClick={addQuestion}>
@@ -79,7 +105,7 @@ export const EssayInputModal: React.FC = () => {
 				</Modal.Body>
 				<Modal.Footer>
 					<Button color='green' onClick={() => setOpenModal(false)}>
-						I accept
+						저장
 					</Button>
 				</Modal.Footer>
 			</Modal>

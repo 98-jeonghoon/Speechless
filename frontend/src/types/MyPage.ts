@@ -1,9 +1,9 @@
-export interface MyPageItemProps {
+export interface MyPageItem {
 	title: string;
 	date: string;
 }
 
-export interface Statement {
+export interface Questions{
 	question: string;
-	answer: string;
+	answer: string
 }
