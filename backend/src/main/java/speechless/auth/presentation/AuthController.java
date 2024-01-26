@@ -18,6 +18,7 @@ import speechless.member.domain.Member;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @Tag(name = "카카오 OAuth", description = "카카오 로그인 API")
 public class AuthController {
     private final JwtProvider jwtProvider;
