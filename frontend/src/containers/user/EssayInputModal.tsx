@@ -7,34 +7,34 @@ import { Statement } from '../../types/Statement';
 export const EssayInputModal: React.FC = () => {
 	const [openModal, setOpenModal] = useState(false);
 
-const [formData, setFormData] = useState<Statement>(
-	{
-		title: '',
-		company: '',
-		position: '',
-		career: '',
-		questions: [{ question: '', answer: '' }],
-	}
+	const [formData, setFormData] = useState<Statement>(
+		{
+			title: '',
+			company: '',
+			position: '',
+			career: '',
+			questions: [{ question: '', answer: '' }],
+		}
 	);
 
-	  
 	const updateStringField = (field:string, value:string) => {
 		setFormData(prev => ({ ...prev, [field]: value }));
 	};
 
-	const updateQuestionField = (field:JSON, value:Statement[]) => {
-		
-	}
+	const addQuestion = () => {
+		setFormData(prevFormData => ({
+		  ...prevFormData,
+		  questions: [...prevFormData.questions, { question: '', answer: '' }],
+		}));
+	  };
 
-	// const addQuestion = () => {
-	// 	updateField('questions', [questions: [{ question: '', answer: '' }]]);
-	// };
-
-	// const removeQuestion = (index: number) => {
-	// 	const newQuestions = formData.questions.slice();
-	// 	newQuestions.splice(index, 1);
-	// 	updateField('questions', newQuestions);
-	// };
+	const removeQuestion = (index: number) => {
+		console.log(index)
+		setFormData(prevFormData => ({
+		  ...prevFormData,
+		  questions: prevFormData.questions.filter((_, i) => i !== index),
+		}));
+	  };
 
 	const CreateStatement = () => {
 		console.log(formData);
@@ -68,29 +68,15 @@ const [formData, setFormData] = useState<Statement>(
 						</div>
 
 						<p className='text-base leading-relaxed text-gray-500 dark:text-gray-400'>자기소개서</p>
-						{questions.map((_, index) => (
+						{formData.questions.map((_, index) => (
 							<div key={index} className='p-3 bg-primary-50'>
 								<p className='text-base leading-relaxed text-gray-500 dark:text-gray-400'>문항</p>
 								<TextInput
-									id={`question-${index}`}
-									value={questions[index].question}
-									onChange={(e) => {
-										const newQuestions = [...questions];
-										newQuestions[index].question = e.target.value;
-										setQuestions(newQuestions);
-									}}
 								/>
 								<p className='text-base leading-relaxed text-gray-500 dark:text-gray-400'>답변</p>
 								<TextInput
-									id={`answer-${index}`}
-									value={questions[index].answer}
-									onChange={(e) => {
-										const newQuestions = [...questions];
-										newQuestions[index].answer = e.target.value;
-										setQuestions(newQuestions);
-									}}
 								/>
-								{questions.length > 1 && (
+								{formData.questions.length > 1 && (
 									<Button onClick={() => removeQuestion(index)} className='bg-negative-400 mt-2'>
 										삭제
 									</Button>
