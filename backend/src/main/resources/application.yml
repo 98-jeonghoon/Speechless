@@ -25,3 +25,11 @@ api-keys:
   stt:
     secret-key: e7fe8b875a764847bb0eca7d5e11d2a3
     invoke-url: https://clovaspeech-gw.ncloud.com/external/v1/6810/5533df48df09b92dd856faaba26195b2a8c76660eab472d140cae7f81b7f7c05
+
+---
+server:
+  ssl:
+    key-store: keystore.p12
+    key-store-type: PKCS12
+    key-password: deer4
+#SSL
