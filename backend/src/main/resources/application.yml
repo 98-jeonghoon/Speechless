@@ -29,7 +29,7 @@ api-keys:
 ---
 server:
   ssl:
-    key-store: keystore.p12
+    key-store: classpath:keystore.p12
     key-store-type: PKCS12
     key-store-password: deer4
     key-alias: tomcat
