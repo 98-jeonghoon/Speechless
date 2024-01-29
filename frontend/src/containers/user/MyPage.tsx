@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Card, Avatar, List } from 'flowbite-react';
-import { EssayInputModal } from './EssayInputModal';
 import { MyPageItem } from '../../components/MyPageItem';
+import { EssayList } from '../../components/EssayList';
 
 export const MyPage = () => {
 	return (
@@ -96,12 +96,7 @@ export const MyPage = () => {
 
 			<div className='items-center w-3/5 p-24 m-5 border-2 rounded-3xl mx-auto'>
 				<p className='text-2xl ml-4 mb-4'>면접 사전 정보 관리</p>
-				<EssayInputModal />
-				<List>
-					{essayData.map((item, idx) => (
-						<MyPageItem key={idx} title={item.title} date={item.date} />
-					))}
-				</List>
+				<EssayList/>
 			</div>
 
 			<div className='items-center w-3/5 p-24 m-5 border-2 rounded-3xl mx-auto'>
@@ -128,12 +123,5 @@ const MyPageData = [
 	{
 		title: '팀 프로젝트 발표 연습',
 		date: '2024.03.05 16:00',
-	},
-];
-
-const essayData = [
-	{
-		title: '삼성 전자 상반기 신입사원 지원',
-		date: '2024.03.05',
 	},
 ];

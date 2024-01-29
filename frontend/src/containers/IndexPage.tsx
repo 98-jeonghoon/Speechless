@@ -6,6 +6,8 @@ import type { CommunityView } from '../types/Community.ts';
 import { RecruitCard } from '../components/RecruitCard.tsx';
 
 import Banner1 from '../assets/images/banner-1.png';
+import { useEffect, useState } from 'react';
+import { axios } from '../utils/axios.ts';
 
 const awaitingSpeechSessions: CommunityView[] = [
 	{
@@ -70,6 +72,21 @@ const awaitingSpeechSessions: CommunityView[] = [
 	},
 ];
 export const IndexPage = () => {
+	const [speechSessions, setSpeechSessions] = useState<CommunityView[]>([]);
+
+	useEffect(() => {
+		axios
+			.get('/community/list')
+			.then((res) => {
+				// TODO: 백엔드에서 받은 response로 글을 채워준다
+				setSpeechSessions(res.data);
+			})
+			.catch((err) => {
+				// TODO: 백엔드 response가 없어서 무조건 에러가 날 것이므로 임시로 더미 데이터를 넣어준다
+				setSpeechSessions(awaitingSpeechSessions);
+			});
+	}, []);
+
 	return (
 		<>
 			<div className='relative h-56 sm:h-64 xl:h-80 2xl:h-96 mb-8'>
@@ -117,7 +134,7 @@ export const IndexPage = () => {
 			<div>
 				<p className='text-2xl ml-4 mb-4'>이번 주 인기 발표 모집 글</p>
 				<div className='grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-4'>
-					{awaitingSpeechSessions.map((session) => {
+					{speechSessions.map((session) => {
 						return <RecruitCard key={session.id} session={session} />;
 					})}
 				</div>
