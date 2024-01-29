@@ -1,7 +1,7 @@
 import React from 'react';
-import { Button, Card, Avatar, List } from 'flowbite-react';
-import { MyPageItem } from '../../components/MyPageItem';
-import { EssayList } from '../../components/EssayList';
+import { Button, Card, Avatar} from 'flowbite-react';
+import { StatementView } from '../statement/StatementView';
+import { InterviewReportView } from '../report/InterviewReportView';
 
 export const MyPage = () => {
 	return (
@@ -76,7 +76,7 @@ export const MyPage = () => {
 				</div>
 			</div>
 
-			<div className='items-center w-3/5 p-24 m-5 border-2 rounded-3xl mx-auto'>
+			{/* <div className='items-center w-3/5 p-24 m-5 border-2 rounded-3xl mx-auto'>
 				<p className='text-2xl ml-4 mb-4'>해야할 스피치 연습</p>
 				<List>
 					{MyPageData.map((item, idx) => (
@@ -92,36 +92,17 @@ export const MyPage = () => {
 						<MyPageItem key={idx} title={item.title} date={item.date} />
 					))}
 				</List>
-			</div>
+			</div> */}
 
-			<div className='items-center w-3/5 p-24 m-5 border-2 rounded-3xl mx-auto'>
+			<div className='items-center w-3/5 p-12 m-5 border-2 rounded-3xl mx-auto'>
 				<p className='text-2xl ml-4 mb-4'>면접 사전 정보 관리</p>
-				<EssayList/>
+				<StatementView/>
 			</div>
 
-			<div className='items-center w-3/5 p-24 m-5 border-2 rounded-3xl mx-auto'>
+			<div className='items-center w-3/5 p-12 m-5 border-2 rounded-3xl mx-auto'>
 				<p className='text-2xl ml-4 mb-4'>완료한 면접 연습</p>
-				<List>
-					{MyPageData.map((item, idx) => (
-						<MyPageItem key={idx} title={item.title} date={item.date} />
-					))}
-				</List>
+				<InterviewReportView/>
 			</div>
 		</>
 	);
 };
-
-const MyPageData = [
-	{
-		title: '자유주제 5분 스피치',
-		date: '2024.01.19 17:00',
-	},
-	{
-		title: 'CS 스터디 발표 연습',
-		date: '2024.02.10 14:00 ',
-	},
-	{
-		title: '팀 프로젝트 발표 연습',
-		date: '2024.03.05 16:00',
-	},
-];
