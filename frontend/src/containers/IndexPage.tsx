@@ -6,8 +6,10 @@ import type { CommunityView } from '../types/Community.ts';
 import { RecruitCard } from '../components/RecruitCard.tsx';
 
 import Banner1 from '../assets/images/banner-1.png';
+import Banner2 from '../assets/images/banner-2.png';
+
 import { useEffect, useState } from 'react';
-import { axios } from '../utils/axios.ts';
+import { useLocalAxios } from '../utils/axios.ts';
 
 const awaitingSpeechSessions: CommunityView[] = [
 	{
@@ -72,10 +74,11 @@ const awaitingSpeechSessions: CommunityView[] = [
 	},
 ];
 export const IndexPage = () => {
+	const localAxiosWithAuth = useLocalAxios();
 	const [speechSessions, setSpeechSessions] = useState<CommunityView[]>([]);
 
 	useEffect(() => {
-		axios
+		localAxiosWithAuth
 			.get('/community/list')
 			.then((res) => {
 				// TODO: 백엔드에서 받은 response로 글을 채워준다
@@ -85,15 +88,17 @@ export const IndexPage = () => {
 				// TODO: 백엔드 response가 없어서 무조건 에러가 날 것이므로 임시로 더미 데이터를 넣어준다
 				setSpeechSessions(awaitingSpeechSessions);
 			});
+
+		//axios.get("/kakao");
 	}, []);
 
 	return (
 		<>
 			<div className='relative h-56 sm:h-64 xl:h-80 2xl:h-96 mb-8'>
 				<Carousel slideInterval={5000}>
-					<img src={Banner1} alt='...' />
-					<img src={Banner1} alt='...' />
-					<img src={Banner1} alt='...' />
+					<img src={Banner2} alt='...' />
+					<img src={Banner2} alt='...' />
+					<img src={Banner2} alt='...' />
 					<img src={Banner1} alt='...' />
 					<img src={Banner1} alt='...' />
 				</Carousel>
