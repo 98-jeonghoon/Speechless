@@ -1,7 +1,12 @@
+import { useEffect } from 'react';
 import { List, Button } from 'flowbite-react';
 import { EssayInputModal } from './EssayInputModal';
 
 export const EssayList: React.FC = () => {
+    useEffect(() => {
+        console.log('essayList');
+    })
+
     return(
         <>
             <EssayInputModal/>
