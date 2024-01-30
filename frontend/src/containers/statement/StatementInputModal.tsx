@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Modal, TextInput, Textarea } from 'flowbite-react';
 import { Statement } from '../../types/Statement';
-import { axios } from '../../utils/axios';
+import { useLocalAxios} from '../../utils/axios';
 
 interface StatementForm extends Statement {
 	questions: { question: string; answer: string }[];
@@ -13,6 +13,8 @@ interface StatementForm extends Statement {
 export const StatementInputModal: 
 						React.FC<{ openModal: boolean, setOpenModal: (openModal: boolean) => void, dataIndex: number, getStatements: () => void }> 
 						= ({ openModal, setOpenModal, dataIndex, getStatements }) => {
+	
+	const localAxios = useLocalAxios(true);
 	
 	//ModalForm이 내부적으로 사용하는 Statement 데이터. useEffect를 이용해서 openModal이 열릴때만 데이터를 가져온다. 만약 create모드면 가져오지 않는다.
 	const [formData, setFormData] = useState<StatementForm>(
@@ -26,9 +28,10 @@ export const StatementInputModal:
 		}
 	);
 
+	//get 메소드를 통해 모달이 열릴 때마다 자기소개서들 리스트를 백엔드에서 가져온다.
 	useEffect(() => {
 		if (dataIndex!=-1 && openModal){
-			axios.get(`statements/${dataIndex}`)
+			localAxios.get(`statements/${dataIndex}`)
 			.then((res:{data:StatementForm}) => {
 				setFormData(res.data);
 			})
@@ -59,9 +62,9 @@ export const StatementInputModal:
 		}));
 	};
 
-	//post 메소드를 통해 벡엔드에 새로운 statement 생성을 요청한다.
+	//post 메소드를 통해 벡엔드에 새로운 자기소개서 생성을 요청한다.
 	const createStatement = () => {
-		axios.post("statements", formData)
+		localAxios.post("statements", formData)
 		.then((res) => {
 			getStatements();
 			setOpenModal(false);
@@ -73,9 +76,9 @@ export const StatementInputModal:
 		});
 	}
 
-	//patch 메소드를 통해 벡엔드에 특정 id의 statement 수정을 요청한다.
+	//patch 메소드를 통해 벡엔드에 특정 id의 자기소개서 수정을 요청한다.
 	const updateStatement = () => {
-		axios.patch(`statements/${dataIndex}`, formData)
+		localAxios.patch(`statements/${dataIndex}`, formData)
 		.then((res) => {
 			getStatements();
 			setOpenModal(false);

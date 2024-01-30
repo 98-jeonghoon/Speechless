@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { List, Button } from 'flowbite-react';
 import { StatementInputModal } from './StatementInputModal';
-import { axios } from '../../utils/axios';
 import { Statement } from '../../types/Statement';
+import { useLocalAxios } from '../../utils/axios';
 
 // StatementView 컴포넌트: 자기소개서을 보여주고 관리하는 뷰입니다.
 export const StatementView: React.FC = () => {
@@ -10,13 +10,15 @@ export const StatementView: React.FC = () => {
     const [viewIndex, setViewIndex] = useState(0); // 현재 보고 있는 자기소개서의 인덱스
     const [statements, setStatements] = useState<Statement[]>([]); // 자기소개서 목록 상태 관리
     
+    const localAxios = useLocalAxios(true);
+
     useEffect(() => {
         getStatements(); // 컴포넌트 마운트 시 자기소개서 목록 불러오기
     }, []);
 
     
     const getStatements = () => {
-        axios.get("statements")
+        localAxios.get("statements")
         .then((res) => {
             setStatements(res.data.statements);
         })
@@ -30,9 +32,10 @@ export const StatementView: React.FC = () => {
         })
     }
 
+    //delete 메소드를 통해 특정 id인 자기소개서를 지운다.
     const deleteStatement = (index: number) => {
         if (confirm("정말로 삭제하시겠습니까?")){
-            axios.delete(`statements/${index}`)
+            localAxios.delete(`statements/${index}`)
             .then((res) => {
                 getStatements();
                 console.log(res);
