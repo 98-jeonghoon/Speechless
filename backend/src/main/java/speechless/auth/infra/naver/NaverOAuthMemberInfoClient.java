@@ -30,6 +30,7 @@ public class NaverOAuthMemberInfoClient implements OAuthMemberInfoClient {
     private HttpEntity<HttpHeaders> createRequest(String accessToken) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);
+        System.out.println(headers);
         return new HttpEntity<>(headers);
     }
 

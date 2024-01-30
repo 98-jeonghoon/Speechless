@@ -32,8 +32,10 @@ public class NaverOAuthTokenClient implements OAuthTokenClient {
     @Override
     public String getAccessToken(String authCode, String redirectUri) {
         Map<String, String> params = createRequestBodyWithAuthcode(authCode, redirectUri);
+        System.out.println(params);
         HttpEntity<?> request = new HttpEntity<>(new HttpHeaders());
         ResponseEntity<NaverTokenResponse> naverTokenResponseResponse = getNaverToken(request, params);
+        System.out.println(naverTokenResponseResponse);
         return requireNonNull(requireNonNull(naverTokenResponseResponse.getBody())).accessToken();
     }
 
@@ -61,6 +63,7 @@ public class NaverOAuthTokenClient implements OAuthTokenClient {
                     params
             );
         } catch (HttpClientErrorException e) {
+            System.out.println(e.getMessage());
             throw new TokenMissingException();
         }
     }
