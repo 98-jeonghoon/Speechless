@@ -13,6 +13,7 @@ import { SpeechListPage } from './containers/speech/SpeechListPage.tsx';
 import { SpeechDetailPage } from './containers/speech/SpeechDetailPage.tsx';
 import { StatementWritePage } from './containers/statement/StatementWritePage.tsx';
 import { InterviewEnterPage } from './containers/session/interview/InterviewEnterPage.tsx';
+import { InterviewFUnction } from './containers/session/interview/InterviewFunction.tsx';
 
 export default function App() {
 	return (
@@ -37,6 +38,7 @@ export default function App() {
 						<Route path='/auth/naver' element={<NaverCallback />} />
 						<Route path='/session/interview' element={<InterviewPage />} />
 						<Route path='/session/speech' element={<SpeechPage />} />
+						<Route path='/session/interview-function' element={<InterviewFUnction />} />
 					</Route>
 				</Routes>
 			</BrowserRouter>
