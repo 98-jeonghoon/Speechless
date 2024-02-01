@@ -112,7 +112,8 @@ export const StatementWritePage: React.FC = () =>  {
 								</div>
 								<div>
 									<p className='text-base leading-relaxed text-gray-500 dark:text-gray-400'>경력</p>
-									<TextInput disabled={disableUpdate} value={formData.career} onChange={(e) => updateStringField('career', e.target.value)}/>
+									<TextInput type='number' disabled={disableUpdate} value={formData.career} onChange={(e) => updateStringField('career', e.target.value)}/>
+									
 								</div>
 							</div>
 
