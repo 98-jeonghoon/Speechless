@@ -7,7 +7,7 @@ import { Button, Dropdown, Modal, TextInput} from 'flowbite-react';
 import { CustomButton } from '../../../components/CustomButton';
 import { useNavigate } from 'react-router-dom';
 
-import TalkImg from '../../../assets/images/human_face.png';
+import TalkImg from '../../../assets/images/human_robot_talk.png';
 
 export const InterviewEnterPage = () => {
 
