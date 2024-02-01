@@ -68,20 +68,20 @@ export const StatementWritePage: React.FC = () =>  {
 		localAxios.post("statements", formData)
 		.then((res) => {
 			console.log(res);
-			navigate(-1)
+			navigate("/interview");
 		})
 		.catch((err) => {
 			alert("자기소개서 등록에 실패했습니다.")
 			console.log(err);
-			navigate(-1)
 		});
 	}
 
 	//patch 메소드를 통해 벡엔드에 특정 id의 자기소개서 수정을 요청한다.
 	const updateStatement = () => {
-		localAxios.patch(`statements/${id}`, formData)
+		localAxios.put(`statements`, formData)
 		.then((res) => {
 			console.log(res);
+			navigate("/interview");
 		})
 		.catch((err) => {
 			console.log(err);
