@@ -4,7 +4,6 @@ import { Statement } from '../../types/Statement';
 import { useLocalAxios } from '../../utils/axios';
 import { useNavigate } from 'react-router-dom';
 import { CustomButton } from '../../components/CustomButton';
-import { Pagination } from 'flowbite-react';
 
 // StatementView 컴포넌트: 자기소개서을 보여주고 관리하는 뷰입니다.
 export const StatementView: React.FC = () => {
