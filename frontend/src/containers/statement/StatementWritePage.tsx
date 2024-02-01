@@ -68,7 +68,7 @@ export const StatementWritePage: React.FC = () =>  {
 		localAxios.post("statements", formData)
 		.then((res) => {
 			console.log(res);
-			navigate("/interview/detail/" + res.data.id);
+			navigate("/statement/detail/" + res.data.id);
 		})
 		.catch((err) => {
 			alert("자기소개서 등록에 실패했습니다.")
@@ -81,7 +81,7 @@ export const StatementWritePage: React.FC = () =>  {
 		localAxios.put(`statements`, formData)
 		.then((res) => {
 			console.log(res);
-			navigate("/interview/detail/" + res.data.id);
+			navigate("/statement/detail/" + res.data.id);
 		})
 		.catch((err) => {
 			console.log(err);
@@ -93,7 +93,7 @@ export const StatementWritePage: React.FC = () =>  {
 			<div className='basis-2/3'>
 				<h1 className="text-4xl font-bold leading-tight text-gray-900">자기소개서 {id?"수정":"생성"}</h1>
 				<div className='flex gap-3'>
-					<Button className='bg-negative-400 mt-5' onClick={() => navigate(-1)}>뒤로 가기</Button>
+					<Button className='bg-neWgative-400 mt-5' onClick={() => navigate(-1)}>뒤로 가기</Button>
 				</div>
 					<div className='mt-5'>
 						<div className='space-y-6'>
@@ -112,7 +112,7 @@ export const StatementWritePage: React.FC = () =>  {
 								<div>
 									<p className='text-base leading-relaxed text-gray-500 dark:text-gray-400'>경력</p>
 									<TextInput type='number' value={formData.career} onChange={(e) => updateStringField('career', e.target.value)}/>
-									
+		
 								</div>
 							</div>
 
