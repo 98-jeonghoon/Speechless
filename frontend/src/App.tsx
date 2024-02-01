@@ -39,6 +39,7 @@ export default function App() {
 						<Route path='/session/interview' element={<InterviewPage />} />
 						<Route path='/session/speech' element={<SpeechPage />} />
 						<Route path='/session/interview-function' element={<InterviewFUnction />} />
+						<Route path='/session/interview-function' element={<InterviewFUnction />} />
 					</Route>
 				</Routes>
 			</BrowserRouter>
