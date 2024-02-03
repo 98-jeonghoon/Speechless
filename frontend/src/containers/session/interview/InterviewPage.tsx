@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/media-has-caption */
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from 'flowbite-react';
 import { CustomButton } from '../../../components/CustomButton.tsx';
 
@@ -9,6 +9,8 @@ import { useNavigate } from "react-router-dom";
 
 import { useInterviewSessionStore } from "../../../stores/session.ts";
 import {OpenVidu, Publisher, Session} from 'openvidu-browser';
+import {FaceAnalyzer} from '../../../utils/FaceAnalyzer.ts';
+
 
 export const InterviewPage = () => {
 
@@ -27,6 +29,9 @@ export const InterviewPage = () => {
 	let currentVideoDevice = null;
 	let mainStreamManager = null;
 	let publisher: Publisher | null = null;
+
+	const faceAnalyzerRef = useRef<FaceAnalyzer>();
+	const [faceEmojiPath, setFaceEmojiPath] = useState();
 
 	// Connection을 생성해주는 함수
 	// 면접 페이지에서는 따로 다인 세션을 생성하지 않으므로, 페이지 진입시 session 생성
@@ -90,6 +95,7 @@ export const InterviewPage = () => {
 		initSession().catch((error) => {
 			console.error(error);
 		});
+		faceAnalyzerRef.current = new FaceAnalyzer(videoRef);
 	}, []);
 
 	const toggleVideo = () => {
@@ -106,6 +112,14 @@ export const InterviewPage = () => {
 		if (publisher) {
 			publisher.publishAudio(audioEnabled);
 		}
+	}
+
+	const startFaceAnalysis = () => {
+		if (!faceAnalyzerRef.current) {
+			return;
+		}
+
+		faceAnalyzerRef.current.start();
 	}
 
 	return (
@@ -125,11 +139,12 @@ export const InterviewPage = () => {
 							<div className='session-indicator-expression flex gap-1 items-center justify-end'>
 								<span className='text-xl font-semibold'>표정</span>
 								<span>
-									<svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+									{faceAnalyzerRef.current?.scores[-1] ?? "X"}
+									{/* <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
 										 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
 										<path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
 											  d="M15 9h0M9 9h0m12 3a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM6.6 13a5.5 5.5 0 0 0 10.8 0H6.6Z"/>
-									</svg>
+									</svg> */}
 								</span>
 							</div>
 							<div className='session-indicator-voice flex gap-1 items-center'>
@@ -154,6 +169,7 @@ export const InterviewPage = () => {
 			<div className='session-footer flex justify-center'>
 				<Button color='blue' onClick={toggleAudio}>마이크 토글</Button>
 				<Button color='blue' onClick={toggleVideo}>카메라 토글</Button>
+				<Button className='bg-primary-500' onClick={startFaceAnalysis}>표정 인식 시작</Button>
 			</div>
 		</div>
 	);

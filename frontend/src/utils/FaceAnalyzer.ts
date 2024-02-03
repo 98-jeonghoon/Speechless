@@ -8,7 +8,7 @@ import * as faceapi from 'face-api.js';
 - video가 꺼져있으면 해당 시간엔 -1 저장
 - 인식 되지 않을 경우엔 직전 값 사용
 */
-export class FaceClass {
+export class FaceAnalyzer {
 	private videoRef: React.RefObject<HTMLVideoElement>;
 	private modelUrl: string = '/models';
 	private intervalId: number | null = null;
@@ -72,11 +72,7 @@ export class FaceClass {
 			this.endTime = Date.now();
 		}
 	}
-
-	public getScores(): number[] {
-		return this.scores;
-	}
-
+	
 	public getScoreAtSection(sec: number): number {
 		try{
 			return this.scores[sec-1];
