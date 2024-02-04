@@ -1,4 +1,4 @@
-package speechless.interview.dto;
+package speechless.interview.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

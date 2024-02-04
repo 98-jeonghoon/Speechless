@@ -5,8 +5,8 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import speechless.interview.dto.GptRequest;
-import speechless.interview.dto.GptResponse;
+import speechless.interview.application.dto.GptRequest;
+import speechless.interview.application.dto.GptResponse;
 
 @Component
 public class GptUtil {
