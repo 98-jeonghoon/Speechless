@@ -122,6 +122,14 @@ export const InterviewPage = () => {
 		faceAnalyzerRef.current.start();
 	}
 
+	const stopFaceAnalysis = () => {
+		if (!faceAnalyzerRef.current) {
+			return;
+		}
+
+		faceAnalyzerRef.current.stop();
+	}
+
 	return (
 		<div className='p-10 w-[100vw] h-[100vh] bg-gradient-to-b from-white to-gray-200 flex flex-col'>
 			<div className='session-header flex justify-end'>
@@ -170,6 +178,7 @@ export const InterviewPage = () => {
 				<Button color='blue' onClick={toggleAudio}>마이크 토글</Button>
 				<Button color='blue' onClick={toggleVideo}>카메라 토글</Button>
 				<Button className='bg-primary-500' onClick={startFaceAnalysis}>표정 인식 시작</Button>
+				<Button className='bg-primary-500' onClick={stopFaceAnalysis}>표정 인식 종료</Button>
 			</div>
 		</div>
 	);
