@@ -28,6 +28,66 @@ export const InterviewPage = () => {
 	const [ videoEnabled, setVideoEnabled ] = useState(true);
 	const [ audioEnabled, setAudioEnabled ] = useState(true);
 
+	const [ currentQuestion, setCurrentQuestion ] = useState('');
+
+	// 페이지 진입시 서비스 플로우 시작
+	useEffect(() => {
+		OV = new OpenVidu();
+
+		initSession()
+			.then(() => {
+				setPresetQuestions();
+			})
+			.catch((e) => {
+				console.error(e);
+				// 에러가 발생해서 session을 초기화하지 못했으므로 에러 페이지로 이동
+				interviewSessionStore.clearSession();
+				navigate('/error', {
+					replace: true,
+					state: {
+						code: 404,
+						message: '세션을 찾지 못했습니다. 이미 종료된 세션일 가능성이 높습니다.'
+					}
+				});
+			});
+	}, []);
+
+	const setPresetQuestions = async () => {
+		//const response = await localAxios.get('basic-question');
+		//const presetQuestions = response.data;
+		const presetQuestions = [
+			"1분 자기소개 해주세요.",
+			"본인이 지원한 직무에 대해 설명해주세요.",
+			"본인이 가장 잘한 프로젝트에 대해 설명해주세요.",
+			"본인이 가장 어려웠던 프로젝트에 대해 설명해주세요.",
+			"본인이 가장 자신있는 기술에 대해 설명해주세요.",
+			"본인이 가장 부족하다고 생각하는 기술에 대해 설명해주세요.",
+			"본인이 가장 중요하다고 생각하는 가치에 대해 설명해주세요.",
+			"인생에서 가장 힘들었던 경험이 무엇인가요?",
+			"왜 이 직무를 선택했나요?",
+			"동료, 친구들이 나를 어떤 사람으로 생각할까요?",
+			"본인의 장단점에 대해 설명해주세요.",
+			"평소에 스트레스를 해소하는 방법은 무엇인가요?",
+			"본인이 가장 좋아하는 책은 무엇인가요?",
+			"본인의 취미는 무엇인가요?",
+			"왜 굳이 우리 회사에 지원하려고 하나요?",
+			"동료가 잘못을 했을 때 어떻게 조치할 것인가요?"
+		];
+
+		// presetQuestions 중에서 랜덤으로 5개를 뽑아서 interviewSessionStore에 저장
+		const randomQuestions = presetQuestions.sort(() => Math.random() - Math.random()).slice(0, 5);
+		interviewSessionStore.setQuestions(randomQuestions.map((question) => ({ question, answer: '' })));
+		interviewSessionStore.setQuestionCursor(0);
+
+		console.log(interviewSessionStore);
+		startQuestion();
+	};
+
+	const startQuestion = useCallback(() => {
+		// 질문 시작
+		setCurrentQuestion(interviewSessionStore.questions[interviewSessionStore.questionCursor].question);
+	}, [interviewSessionStore]);
+
 	// Connection을 생성해주는 함수
 	// 면접 페이지에서는 따로 다인 세션을 생성하지 않으므로, 페이지 진입시 session 생성
 	const createConnection = async (sessionId: string) => {
@@ -101,14 +161,6 @@ export const InterviewPage = () => {
 		console.log(_publisher);
 	}, [interviewSessionStore]);
 
-	useEffect(() => {
-		console.log("effect!")
-		OV = new OpenVidu();
-		initSession().catch((error) => {
-			console.error(error);
-		});
-	}, []);
-
 	const deleteSubscriber = useCallback((streamManager: StreamManager) => {
 		setSubscribers((prevSubscribers) => {
 			const index = prevSubscribers.indexOf(streamManager);
@@ -155,43 +207,53 @@ export const InterviewPage = () => {
 				</CustomButton>
 			</div>
 			<div className='session-title flex justify-center mt-6 text-3xl'>
-				1분 자기소개 해주세요.
+				{currentQuestion}
 			</div>
-			<div className='session-content grid grid-cols-2 flex-1'>
-				<div className='session-screen flex flex-col items-center justify-center'>
-					<div className='session-screen-container flex flex-col'>
-						<div className='session-screen-header flex justify-end py-3 gap-4'>
-							<div className='session-indicator-expression flex gap-1 items-center justify-end'>
-								<span className='text-xl font-semibold'>표정</span>
-								<span>
-									<svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
-										 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-										<path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-											  d="M15 9h0M9 9h0m12 3a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM6.6 13a5.5 5.5 0 0 0 10.8 0H6.6Z"/>
-									</svg>
-								</span>
+			<div className='session-body flex-1 p-10'>
+				<div className='session-content grid grid-cols-2 flex-1'>
+					<div className='session-screen flex flex-col items-center justify-center'>
+						<div className='session-screen-container flex flex-col'>
+							<div className='session-screen-header flex justify-end py-3 gap-4'>
+								<div className='session-indicator-expression flex gap-2 items-center'>
+									<span className='text-xl font-semibold'>표정</span>
+									<span className='material-symbols-outlined text-yellow-400 text-5xl'>
+										sentiment_satisfied
+									</span>
+								</div>
+								<div className='session-indicator-voice flex gap-2 items-center'>
+									<span className='text-xl font-semibold'>발음</span>
+									<span className='material-symbols-outlined text-yellow-400 text-5xl'>
+										sentiment_satisfied
+									</span>
+								</div>
 							</div>
-							<div className='session-indicator-voice flex gap-1 items-center'>
-								<span className='text-xl font-semibold'>발음</span>
-								<span className='text-2xl'>
-									<svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
-										 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-										<path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"
-											  strokeWidth="2"
-											  d="M15 9h0M9 9h0m12 3a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM6.6 13a5.5 5.5 0 0 0 10.8 0H6.6Z"/>
-									</svg>
-								</span>
-							</div>
+							{
+								mainStreamManager
+									? <OpenViduVideo streamManager={mainStreamManager}/>
+									: null
+							}
 						</div>
+					</div>
+					<div className='session-ui'>
 						{
-							mainStreamManager
-							? <OpenViduVideo streamManager={mainStreamManager} />
-							: null
+							interviewSessionStore.questions.slice(0, interviewSessionStore.questionCursor + 1).map((question, index) => {
+								return (
+									<div key={index}>
+										<div className='w-full flex justify-start'>
+											<div className='session-question flex justify-center items-center'>
+												{question.question}
+											</div>
+										</div>
+										<div className='w-full flex justify-end'>
+											<div className='session-answer flex justify-center items-center'>
+												{question.answer}
+											</div>
+										</div>
+									</div>
+								);
+							})
 						}
 					</div>
-				</div>
-				<div className='session-ui'>
-
 				</div>
 			</div>
 			<div className='session-footer flex justify-center'>
