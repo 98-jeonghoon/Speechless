@@ -14,8 +14,8 @@ export class FaceAnalyzer {
 	private intervalId: number | null = null;
 	private lastKnownScore: number;
 	public scores: number[] = [];
-	public startTime: number;
-	public endTime: number;
+	public startTime: number | undefined;
+	public endTime: number | undefined;
 
 	constructor(videoRef: React.RefObject<HTMLVideoElement>) {
 		this.videoRef = videoRef;
@@ -33,36 +33,46 @@ export class FaceAnalyzer {
 	public start() {
 		if (this.intervalId !== null) {
 			return;
-	}
-
-	this.startTime = Date.now();
-
-	this.lastKnownScore = -1;
-
-	this.intervalId = window.setInterval(async () => {
-		console.log(this.scores);
-
-		if (!this.videoRef.current) {
-		this.scores.push(-1);
-		return;
 		}
 
-		const detections = await faceapi
-		.detectAllFaces(this.videoRef.current, new faceapi.TinyFaceDetectorOptions())
-		.withFaceLandmarks()
-		.withFaceExpressions();
+		this.startTime = Date.now();
 
-		if (detections.length >= 1) {
-		const happyScore = detections[0].expressions.happy;
-		const integerScore = Math.round(happyScore * 100);
-		this.scores.push(integerScore);
-		this.lastKnownScore = integerScore;
-		} else {
-		// No faces detected or more than one face detected, use the last known score
-		this.scores.push(this.lastKnownScore);
-		}
+		this.lastKnownScore = -1;
 
-	}, 1000);
+		let secCumul = [] as number[];
+		let cnt = 0;
+
+		this.intervalId = window.setInterval(async () => {
+			console.log(this.scores);
+
+			if (!this.videoRef.current) {
+				return;
+			}
+
+			const detections = await faceapi
+			.detectAllFaces(this.videoRef.current, new faceapi.TinyFaceDetectorOptions())
+			.withFaceLandmarks()
+			.withFaceExpressions();
+
+			if (detections.length >= 1) {
+				const happyScore = detections[0].expressions.happy;
+				secCumul.push(happyScore);
+			}
+
+			cnt += 1;
+			if(cnt >= 10){
+				if (secCumul.length==0) {
+					this.scores.push(-1);
+				}
+				else{
+					const meanScore = Math.floor(secCumul.reduce((a, b) => a + b, 0) / secCumul.length * 100);
+					this.scores.push(meanScore);
+				}
+				secCumul = [];
+				cnt = 0;
+			}
+
+		}, 100);
 	}
 
 	public stop() {
