@@ -19,7 +19,8 @@ public class InterviewController {
 
     @PostMapping("/question")
     public ResponseEntity<GptResponse> createQuestion() throws Exception {
-        return new ResponseEntity<>(questionService.createQuestion(new AuthCredentials(1L), 1L, 15L),
+        return new ResponseEntity<>(
+            questionService.createQuestion(new AuthCredentials(1L), 1L, 129L, 3),
             HttpStatus.CREATED);
     }
 

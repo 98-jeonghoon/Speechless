@@ -2,6 +2,7 @@ package speechless.interview.application;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import speechless.auth.dto.AuthCredentials;
@@ -9,6 +10,11 @@ import speechless.interview.application.dto.GptRequest;
 import speechless.interview.application.dto.GptResponse;
 import speechless.interview.application.dto.Message;
 import speechless.interview.application.dto.Message.UserType;
+import speechless.interview.domain.InterviewInfo;
+import speechless.interview.domain.InterviewQuestion;
+import speechless.interview.domain.repository.InterviewInfoRepository;
+import speechless.interview.domain.repository.InterviewQuestionRepository;
+import speechless.interview.exception.InterviewNotFoundException;
 import speechless.interview.utils.GptUtil;
 import speechless.member.domain.repository.MemberRepository;
 import speechless.statement.domain.Statement;
@@ -22,15 +28,21 @@ public class InterviewQuestionService {
 
     private final String model = "gpt-4";
 
+    private final InterviewInfoRepository interviewInfoRepository;
+
     private final StatementRepository statementRepository;
 
-    private final MemberRepository memberRepository;
-
     public GptResponse createQuestion(
-        AuthCredentials authCredentials, Long interviewId, Long statementId) throws Exception {
+        AuthCredentials authCredentials, Long interviewId, Long statementId, Integer questionCnt)
+        throws Exception {
 
-        Statement statement = statementRepository.findByMemberIdAndId(authCredentials.id(), statementId)
+        Statement statement = statementRepository.findByMemberIdAndId(authCredentials.id(),
+                statementId)
             .orElseThrow(StatementNotFoundException::new);
+
+        // TODO : 인터뷰(세션) 정보 추가
+        InterviewInfo interview = interviewInfoRepository.findById(interviewId)
+            .orElseThrow(InterviewNotFoundException::new);
 
         List<Message> requestMessage = new ArrayList<>(2);
 
@@ -39,14 +51,28 @@ public class InterviewQuestionService {
             new Message(UserType.SYSTEM, createQuestionSystemMessage(statement)));
 
         requestMessage.add(
-            new Message(UserType.USER, "질문은 별도 안내 없이 5개만 해줘"));
+            new Message(UserType.USER, "질문은 별도 안내 없이 " + questionCnt + "개만 해줘"));
 
         statement.getQuestions().forEach(
-            question -> requestMessage.add(new Message(UserType.USER, createQuestionUserMessage(question)))
+            question -> requestMessage.add(
+                new Message(UserType.USER, createQuestionUserMessage(question)))
         );
 
         GptResponse gptResponse = GptUtil.call(new GptRequest(model, requestMessage));
 
+        // 질문 파싱
+        List<String> content = parsingQuestion(gptResponse, questionCnt);
+
+        // 질문 저장
+        content.forEach(data -> {
+
+            InterviewQuestion question =InterviewQuestion.builder()
+                    .question(data).build();
+
+            interview.addQuestion(question);
+        });
+
+        interviewInfoRepository.save(interview);
         return gptResponse;
     }
 
@@ -84,6 +110,24 @@ public class InterviewQuestionService {
             .append("<<답변>>").append(question.getAnswer());
 
         return sb.toString();
+    }
+
+    private List<String> parsingQuestion(GptResponse response, Integer questionCnt) {
+
+        String content = response.getChoices().get(0).getMessage().getContent();
+
+        List<String> questions = new ArrayList<>(questionCnt);
+
+        StringTokenizer st = new StringTokenizer(content, "\n", false);
+        while(st.hasMoreTokens()) {
+
+            String question = st.nextToken();
+            if (question.isEmpty()) continue;
+
+            questions.add(question);
+        }
+
+        return questions;
     }
 
 }

@@ -1,7 +1,7 @@
 package speechless.interview.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +10,12 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class GptResponse {
+public class Choice {
 
-    private List<Choice> choices;
+    private int index;
+
+    private Message message;
+
+    @JsonProperty("finish_reason")
+    private String finishReason;
 }
