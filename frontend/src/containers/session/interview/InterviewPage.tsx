@@ -30,6 +30,9 @@ export const InterviewPage = () => {
 
 	const [ currentQuestion, setCurrentQuestion ] = useState('');
 
+	const [ stage, setStage ] = useState('Start');
+	const questionCursor = useRef(0);
+
 	// 페이지 진입시 서비스 플로우 시작
 	useEffect(() => {
 		OV = new OpenVidu();
@@ -51,6 +54,43 @@ export const InterviewPage = () => {
 				});
 			});
 	}, []);
+
+	const [timer, setTimer] = useState(-1);
+	const allowTime = useRef(0);
+	const [disableNextButton, setDisableNextButton] = useState(false);
+	useEffect(() => {
+		if(timer <0) {
+		  return;
+		}
+		if (timer > allowTime.current) {
+			setDisableNextButton(true);
+		} 
+		else {
+		setDisableNextButton(false);
+		}
+		const interval = setInterval(() => {
+		  if (timer > 0) {
+			setTimer((prevTimer) => prevTimer - 1);
+		  } else {
+			clearInterval(interval);
+			moveToNextState();
+		  }
+		}, 1000);
+		return () => {clearInterval(interval)};
+	  }, [timer]);
+
+	const moveToNextState= () => {
+		//setDisableNextButton(false);
+		if(stage=="Start" || stage=="Wait"){
+			return startQuestion();
+		}
+		if(stage=='Question'){
+			return startAnswer();
+		}
+		if(stage=="Answer"){
+			return stopAnswer();
+		}
+	}
 
 	const setPresetQuestions = async () => {
 		//const response = await localAxios.get('basic-question');
@@ -76,17 +116,42 @@ export const InterviewPage = () => {
 
 		// presetQuestions 중에서 랜덤으로 5개를 뽑아서 interviewSessionStore에 저장
 		const randomQuestions = presetQuestions.sort(() => Math.random() - Math.random()).slice(0, 5);
+		setCurrentQuestion(randomQuestions[0]);
 		interviewSessionStore.setQuestions(randomQuestions.map((question) => ({ question, answer: '' })));
-		interviewSessionStore.setQuestionCursor(0);
-
-		console.log(interviewSessionStore);
-		startQuestion();
 	};
 
-	const startQuestion = useCallback(() => {
-		// 질문 시작
-		setCurrentQuestion(interviewSessionStore.questions[interviewSessionStore.questionCursor].question);
-	}, [interviewSessionStore]);
+	const startQuestion = () => {
+		setStage('Question');
+		allowTime.current = 10;
+		setTimer(20);
+	};
+
+	const startAnswer = async () => {
+		//const response = await localAxios.post('openvidu/recording/start/' + interviewSessionStore.sessionId)
+		//console.log(response);
+		console.log("answer start");
+		setStage('Answer');
+		allowTime.current = 10;
+		setTimer(30);
+	};
+
+	const stopAnswer = async () => {
+		//const response = await localAxios.post('openvidu/recording/stop/' + interviewSessionStore.sessionId)
+		//console.log(response);
+		console.log("answer stop");
+
+		console.log(interviewSessionStore.questions)
+		
+		questionCursor.current += 1;
+		if(questionCursor.current >= interviewSessionStore.questions.length) {
+			setStage('End');
+		} else {
+			setCurrentQuestion(interviewSessionStore.questions[questionCursor.current].question);
+			allowTime.current = 20;
+			setStage('Wait')
+			setTimer(20);
+		}
+	};
 
 	// Connection을 생성해주는 함수
 	// 면접 페이지에서는 따로 다인 세션을 생성하지 않으므로, 페이지 진입시 session 생성
@@ -187,18 +252,6 @@ export const InterviewPage = () => {
 		if (publisher) publisher.publishAudio(audioEnabled);
 	}, [audioEnabled]);
 
-	const startAnswer = useCallback(async () => {
-		const response = await localAxios.post('openvidu/recording/start/' + interviewSessionStore.sessionId)
-		console.log(response);
-		console.log("answer start");
-	}, []);
-
-	const stopAnswer = useCallback(async () => {
-		const response = await localAxios.post('openvidu/recording/stop/' + interviewSessionStore.sessionId)
-		console.log(response);
-		console.log("answer stop");
-	}, []);
-
 	return (
 		<div className='p-10 w-[100vw] h-[100vh] bg-gradient-to-b from-white to-gray-200 flex flex-col'>
 			<div className='session-header flex justify-end'>
@@ -207,7 +260,14 @@ export const InterviewPage = () => {
 				</CustomButton>
 			</div>
 			<div className='session-title flex justify-center mt-6 text-3xl'>
-				{currentQuestion}
+				{
+					stage=='Start' ? '면접 연습을 시작하려면 시작 버튼을 눌러주세요.' :
+					stage=='Wait' ? '다음 답변이 준비되셨으면 다음을 눌러주세요.' : 
+					stage=='Question' ? currentQuestion :
+					stage=='Answer' ? currentQuestion :
+					stage=='End' ? "종료" :
+					'에러 발생'
+				}
 			</div>
 			<div className='session-body flex-1 p-10'>
 				<div className='session-content grid grid-cols-2 flex-1'>
@@ -236,7 +296,7 @@ export const InterviewPage = () => {
 					</div>
 					<div className='session-ui'>
 						{
-							interviewSessionStore.questions.slice(0, interviewSessionStore.questionCursor + 1).map((question, index) => {
+							interviewSessionStore.questions.slice(0, questionCursor.current).map((question, index) => {
 								return (
 									<div key={index}>
 										<div className='w-full flex justify-start'>
@@ -259,8 +319,17 @@ export const InterviewPage = () => {
 			<div className='session-footer flex justify-center'>
 				<Button color='blue' onClick={toggleAudio}>마이크 토글</Button>
 				<Button color='blue' onClick={toggleVideo}>카메라 토글</Button>
-				<Button color='blue' onClick={startAnswer}>답변 시작</Button>
-				<Button color='blue' onClick={stopAnswer}>답변 종료</Button>
+				<Button color='blue' disabled={disableNextButton} onClick={moveToNextState}>
+					{
+						stage=='Start' ? "시작" :
+						stage=='Wait' ? "다음" :
+						stage=='Question' ? "답변 시작" :
+						stage=='Answer' ? "답변 종료" :
+						stage=='End' ? "나가기를 클릭해주세요." :
+						"에러 발생"
+					}
+				</Button>
+				{timer >0 ? timer : ""}
 			</div>
 		</div>
 	);
