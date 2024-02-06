@@ -11,6 +11,9 @@ import { useInterviewSessionStore } from "../../../stores/session.ts";
 import {Device, OpenVidu, Publisher, Session, StreamManager, Subscriber} from "openvidu-browser";
 import {OpenViduVideo} from "../../../components/OpenViduVideo.tsx";
 
+//import { FaceAnalyzer } from '../../../utils/FaceAnalyzer.ts';
+import * as faceapi from 'face-api.js';
+
 export const InterviewPage = () => {
 
 	const localAxios = useLocalAxios();
@@ -18,7 +21,9 @@ export const InterviewPage = () => {
 
 	const interviewSessionStore = useInterviewSessionStore();
 
-	let OV: OpenVidu | null = null;
+	const videoRef = useRef<HTMLVideoElement>(null);
+
+	const [ OV, setOV ] = useState<OpenVidu | null>(null);
 	const [ session, setSession ] = useState<Session | null>(null);
 	const [ mainStreamManager, setMainStreamManager ] = useState<StreamManager | null>(null);
 	const [ publisher, setPublisher ] = useState<Publisher | null>(null);
@@ -33,10 +38,14 @@ export const InterviewPage = () => {
 	const [ stage, setStage ] = useState('Start');
 	const questionCursor = useRef(0);
 
+	//const faceAnalyzer = useRef<FaceAnalyzer>(new FaceAnalyzer(videoRef))
+	const [lastEmotion, setLastEmotion] = useState({expression: '', probability: -1}); 
+	const [scores, setScores] = useState([] as number[]);
+	const intervalId = useRef<number | null>(null);
+	const modelUrl = '/models';
+
 	// 페이지 진입시 서비스 플로우 시작
 	useEffect(() => {
-		OV = new OpenVidu();
-
 		initSession()
 			.then(() => {
 				setPresetQuestions();
@@ -53,14 +62,51 @@ export const InterviewPage = () => {
 					}
 				});
 			});
+		loadModels();
 	}, []);
+
+	const loadModels = async () => {
+		await faceapi.nets.tinyFaceDetector.loadFromUri(modelUrl);
+		await faceapi.nets.faceLandmark68Net.loadFromUri(modelUrl);
+		await faceapi.nets.faceRecognitionNet.loadFromUri(modelUrl);
+		await faceapi.nets.faceExpressionNet.loadFromUri(modelUrl);
+	}
+
+	const startFaceAnalyze = () => {
+		if (intervalId.current !== null) {
+			return;
+		}
+		intervalId.current = window.setInterval(async () => {
+			if (!videoRef.current) {
+				return;
+			}
+			const detections = await faceapi
+			.detectAllFaces(videoRef.current, new faceapi.TinyFaceDetectorOptions())
+			.withFaceLandmarks()
+			.withFaceExpressions();
+
+			if (detections.length >= 1) {
+				const happyScore = detections[0].expressions.happy;
+				const intScore = Math.floor(happyScore*100);
+				setScores([...scores, intScore]);
+			}
+			setLastEmotion(detections[0].expressions.asSortedArray()[0]);
+	
+		}, 1000);
+	}
+	const stopFaceAnalyze = () => {
+		if (intervalId.current) {
+			clearInterval(intervalId.current);
+			intervalId.current = null;
+		}
+	}
 
 	const [timer, setTimer] = useState(-1);
 	const allowTime = useRef(0);
 	const [disableNextButton, setDisableNextButton] = useState(false);
 	useEffect(() => {
 		if(timer <0) {
-		  return;
+			return;
 		}
 		if (timer > allowTime.current) {
 			setDisableNextButton(true);
@@ -69,12 +115,13 @@ export const InterviewPage = () => {
 		setDisableNextButton(false);
 		}
 		const interval = setInterval(() => {
-		  if (timer > 0) {
-			setTimer((prevTimer) => prevTimer - 1);
-		  } else {
-			clearInterval(interval);
-			moveToNextState();
-		  }
+		  	if (timer > 0) {
+				setTimer((prevTimer) => prevTimer - 1);
+		  	}
+			else {
+				clearInterval(interval);
+				moveToNextState();
+		  	}
 		}, 1000);
 		return () => {clearInterval(interval)};
 	  }, [timer]);
@@ -127,18 +174,22 @@ export const InterviewPage = () => {
 	};
 
 	const startAnswer = async () => {
-		//const response = await localAxios.post('openvidu/recording/start/' + interviewSessionStore.sessionId)
-		//console.log(response);
+		const response = await localAxios.post('openvidu/recording/start/' + interviewSessionStore.sessionId)
+		console.log(response);
 		console.log("answer start");
 		setStage('Answer');
 		allowTime.current = 10;
 		setTimer(30);
+		
+		startFaceAnalyze();
 	};
 
 	const stopAnswer = async () => {
-		//const response = await localAxios.post('openvidu/recording/stop/' + interviewSessionStore.sessionId)
-		//console.log(response);
+		const response = await localAxios.post('openvidu/recording/stop/' + interviewSessionStore.sessionId)
+		console.log(response);
 		console.log("answer stop");
+
+		interviewSessionStore.questions[questionCursor.current].answer = response.data.text;
 
 		console.log(interviewSessionStore.questions)
 		
@@ -151,6 +202,7 @@ export const InterviewPage = () => {
 			setStage('Wait')
 			setTimer(20);
 		}
+		stopFaceAnalyze();
 	};
 
 	// Connection을 생성해주는 함수
@@ -164,10 +216,11 @@ export const InterviewPage = () => {
 	}
 
 	const initSession = useCallback(async () => {
+		let ov = new OpenVidu();
 		if (session !== null) return;
-		if (!OV) return;
+		if (!ov) return;
 
-		const mySession = OV.initSession();
+		const mySession = ov.initSession();
 
 		console.log("init");
 		mySession.on('streamCreated', (event) => {
@@ -201,7 +254,7 @@ export const InterviewPage = () => {
 		console.log(interviewSessionStore);
 
 		await mySession.connect(connectionData.token);
-		const _publisher = await OV.initPublisherAsync(undefined, {
+		const _publisher = await ov.initPublisherAsync(undefined, {
 			audioSource: undefined,
 			videoSource: undefined,
 			publishAudio: audioEnabled,
@@ -214,7 +267,7 @@ export const InterviewPage = () => {
 
 		await mySession.publish(_publisher);
 
-		let devices = await OV.getDevices();
+		let devices = await ov.getDevices();
 		let videoDevices = devices.filter(device => device.kind === 'videoinput');
 		let currentVideoDeviceId = _publisher.stream.getMediaStream().getVideoTracks()[0].getSettings().deviceId;
 		const _currentVideoDevice = videoDevices.find(device => device.deviceId === currentVideoDeviceId);
@@ -224,7 +277,15 @@ export const InterviewPage = () => {
 		setCurrentVideoDevice(_currentVideoDevice);
 
 		console.log(_publisher);
+
+		setOV(ov);
 	}, [interviewSessionStore]);
+
+	useEffect(() => {
+        if (mainStreamManager && videoRef.current) {
+            mainStreamManager.addVideoElement(videoRef.current);
+        }
+    }, [mainStreamManager]);
 
 	const deleteSubscriber = useCallback((streamManager: StreamManager) => {
 		setSubscribers((prevSubscribers) => {
@@ -277,20 +338,29 @@ export const InterviewPage = () => {
 								<div className='session-indicator-expression flex gap-2 items-center'>
 									<span className='text-xl font-semibold'>표정</span>
 									<span className='material-symbols-outlined text-yellow-400 text-5xl'>
-										sentiment_satisfied
+										{
+											lastEmotion.expression === 'happy' ? 'sentiment_very_satisfied' :
+											lastEmotion.expression === 'neutral' ? 'sentiment_neutral' :
+											lastEmotion.expression === 'sad' ? 'sentiment_sad' :
+											lastEmotion.expression === 'angry' ? 'sentiment_extremely_dissatisfied' :
+											lastEmotion.expression === 'fearful' ? 'sentiment_stressed' :
+											lastEmotion.expression === 'disgusted' ? 'sentiment_dissatisfied' :
+											lastEmotion.expression === 'surprised' ? 'sentiment_frustrated' :
+											""
+										}
 									</span>
+									<span className='text-xl font-semibold'>Score: </span>
+									<span className='text-xl font-semibold'>{scores[scores.length - 1]}</span>
 								</div>
-								<div className='session-indicator-voice flex gap-2 items-center'>
+								{/* <div className='session-indicator-voice flex gap-2 items-center'>
 									<span className='text-xl font-semibold'>발음</span>
 									<span className='material-symbols-outlined text-yellow-400 text-5xl'>
 										sentiment_satisfied
 									</span>
-								</div>
+								</div> */}
 							</div>
 							{
-								mainStreamManager
-									? <OpenViduVideo streamManager={mainStreamManager}/>
-									: null
+								<video autoPlay={true} ref={videoRef} />
 							}
 						</div>
 					</div>
@@ -299,12 +369,12 @@ export const InterviewPage = () => {
 							interviewSessionStore.questions.slice(0, questionCursor.current).map((question, index) => {
 								return (
 									<div key={index}>
-										<div className='w-full flex justify-start'>
+										<div className='w-full flex justify-start border-b-2 border-gray-500'>
 											<div className='session-question flex justify-center items-center'>
 												{question.question}
 											</div>
 										</div>
-										<div className='w-full flex justify-end'>
+										<div className='w-full flex justify-end border-b-2 border-gray-500'>
 											<div className='session-answer flex justify-center items-center'>
 												{question.answer}
 											</div>
