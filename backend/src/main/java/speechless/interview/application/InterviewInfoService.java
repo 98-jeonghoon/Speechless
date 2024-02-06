@@ -22,8 +22,10 @@ public class InterviewInfoService {
 
     public Long createInterviewInfo(AuthCredentials authCredentials, String topic)
         throws Exception {
+        Member loginMember = getMember(authCredentials);
 
         InterviewInfo interviewInfo = InterviewInfo.builder()
+            .member(loginMember)
             .startTime(LocalDateTime.now())
             .topic(topic).build();
 
@@ -48,8 +50,7 @@ public class InterviewInfoService {
 
     public List<InterviewInfoResponse> getInterviewInfos(AuthCredentials authCredentials) {
 
-        Member loginMember = memberRepository.findById(authCredentials.id())
-            .orElseThrow(MemberNotFoundException::new);
+        Member loginMember = getMember(authCredentials);
 
         List<InterviewInfo> interviewInfos = interviewRepository.findAllByMember(loginMember);
         return interviewInfos.stream().map(InterviewInfoMapper.INSTANCE::toResponse).toList();
@@ -62,5 +63,10 @@ public class InterviewInfoService {
 
         return InterviewInfoMapper.INSTANCE.toResponse(interviewRepository.findByIdAndMember(id, loginMember));
 
+    }
+
+    private Member getMember(AuthCredentials authCredentials){
+        return memberRepository.findById(authCredentials.id())
+            .orElseThrow(MemberNotFoundException::new);
     }
 }

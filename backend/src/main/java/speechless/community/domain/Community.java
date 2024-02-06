@@ -1,6 +1,8 @@
 package speechless.community.domain;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.*;
 import speechless.common.entity.BaseTimeEntity;
 import speechless.community.dto.request.CreateCommunityRequest;
@@ -96,4 +98,8 @@ public class Community extends BaseTimeEntity {
         this.category = request.category();
         this.maxParticipants = request.maxParticipants();
     }
+
+    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Participant> participants = new ArrayList<>();
 }
