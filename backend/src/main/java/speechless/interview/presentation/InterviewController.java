@@ -20,6 +20,7 @@ public class InterviewController {
 
     private final InterviewQuestionService questionService;
 
+
     @PostMapping("/question")
     public ResponseEntity<String> createQuestion(
         @Parameter(hidden = true) @Auth AuthCredentials authCredentials,
