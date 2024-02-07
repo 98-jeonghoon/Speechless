@@ -4,13 +4,15 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import speechless.auth.dto.AuthCredentials;
+import speechless.common.error.SpeechlessException;
 import speechless.community.domain.Community;
 import speechless.community.domain.Participant;
 import speechless.community.domain.mapper.ParticipantMapper;
 import speechless.community.domain.repository.CommnunityRepository;
 import speechless.community.domain.repository.ParticipantRepository;
-import speechless.community.dto.response.ParticipantResponse;
+import speechless.community.dto.response.ParticipantCommunityResponse;
 import speechless.community.exception.CommunityNotFoundException;
+import speechless.community.exception.NotAllowedParticipantException;
 import speechless.community.exception.ParticipantNotFoundException;
 import speechless.member.domain.Member;
 import speechless.member.domain.repository.MemberRepository;
@@ -19,12 +21,15 @@ import speechless.member.exception.MemberNotFoundException;
 @Service
 @RequiredArgsConstructor
 public class ParticipantService {
+
     private final ParticipantRepository participantRepository;
     private final MemberRepository memberRepository;
     private final CommnunityRepository commnunityRepository;
 
     private ParticipantRepository repository;
-    public void createParticipant(AuthCredentials authCredentials, Long communityId){
+
+    public void createParticipant(AuthCredentials authCredentials, Long communityId)
+        throws SpeechlessException {
         Member loginMember = getMember(authCredentials);
         Community participantCommunity = getCommunity(communityId);
         Participant participant = Participant.builder()
@@ -34,28 +39,48 @@ public class ParticipantService {
         participantRepository.save(participant);
     }
 
-    public void deleteParticipant(Long id){
+    public void deleteParticipant(AuthCredentials authCredentials, Long id)
+        throws SpeechlessException {
+        Participant participant = getParticipant(id);
+
+        checkAuth(authCredentials, participant);
+
         participantRepository.delete(getParticipant(id));
     }
 
-    public List<ParticipantResponse> getParticipants(AuthCredentials authCredentials){
+    public List<ParticipantCommunityResponse> getFinishedParticipants(AuthCredentials authCredentials)
+        throws SpeechlessException {
         Member loginMember = getMember(authCredentials);
-        List<Participant> participants = participantRepository.findAllByMember(loginMember);
-        return participants.stream().map(ParticipantMapper.INSTANCE::toResponse).toList();
+        List<Community> communities = participantRepository.findFinishedByMember(loginMember);
+        return communities.stream().map(ParticipantMapper.INSTANCE::toResponse).toList();
     }
 
-    public Participant getParticipant(Long id){
+    public List<ParticipantCommunityResponse> getReservedParticipants(AuthCredentials authCredentials)
+        throws SpeechlessException {
+        Member loginMember = getMember(authCredentials);
+        List<Community> communities = participantRepository.findReservedByMember(loginMember);
+        return communities.stream().map(ParticipantMapper.INSTANCE::toResponse).toList();
+    }
+
+    public Participant getParticipant(Long id) throws SpeechlessException {
         return participantRepository.findById(id)
             .orElseThrow(ParticipantNotFoundException::new);
     }
 
-    private Member getMember(AuthCredentials authCredentials){
+    private Member getMember(AuthCredentials authCredentials) throws SpeechlessException {
         return memberRepository.findById(authCredentials.id())
             .orElseThrow(MemberNotFoundException::new);
     }
 
-    private Community getCommunity(Long communityId){
+    private Community getCommunity(Long communityId) throws SpeechlessException {
         return commnunityRepository.findById(communityId)
             .orElseThrow(CommunityNotFoundException::new);
+    }
+
+    private void checkAuth(AuthCredentials authCredentials, Participant participant)
+        throws SpeechlessException {
+        if (!authCredentials.id().equals(participant.getMember().getId())) {
+            throw new NotAllowedParticipantException();
+        }
     }
 }
