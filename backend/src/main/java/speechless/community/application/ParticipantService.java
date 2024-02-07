@@ -1,6 +1,8 @@
 package speechless.community.application;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import speechless.auth.dto.AuthCredentials;
@@ -28,7 +30,7 @@ public class ParticipantService {
 
     private ParticipantRepository repository;
 
-    public void createParticipant(AuthCredentials authCredentials, Long communityId)
+    public Participant createParticipant(AuthCredentials authCredentials, Long communityId)
         throws SpeechlessException {
         Member loginMember = getMember(authCredentials);
         Community participantCommunity = getCommunity(communityId);
@@ -37,28 +39,31 @@ public class ParticipantService {
             .community(participantCommunity)
             .build();
         participantRepository.save(participant);
+        return participant;
     }
 
-    public void deleteParticipant(AuthCredentials authCredentials, Long id)
+    public void deleteParticipant(AuthCredentials authCredentials, Long communityId)
         throws SpeechlessException {
-        Participant participant = getParticipant(id);
+
+        Community community = getCommunity(communityId);
+        Participant participant = participantRepository.findByMemberAndCommunity(getMember(authCredentials), community);
 
         checkAuth(authCredentials, participant);
 
-        participantRepository.delete(getParticipant(id));
+        participantRepository.delete(participant);
     }
 
     public List<ParticipantCommunityResponse> getFinishedParticipants(AuthCredentials authCredentials)
         throws SpeechlessException {
         Member loginMember = getMember(authCredentials);
-        List<Community> communities = participantRepository.findFinishedByMember(loginMember);
+        List<Community> communities = participantRepository.findFinishedByMember(loginMember).orElse(new ArrayList<>());
         return communities.stream().map(ParticipantMapper.INSTANCE::toResponse).toList();
     }
 
     public List<ParticipantCommunityResponse> getReservedParticipants(AuthCredentials authCredentials)
         throws SpeechlessException {
         Member loginMember = getMember(authCredentials);
-        List<Community> communities = participantRepository.findReservedByMember(loginMember);
+        List<Community> communities = participantRepository.findReservedByMember(loginMember).orElse(new ArrayList<>());
         return communities.stream().map(ParticipantMapper.INSTANCE::toResponse).toList();
     }
 
