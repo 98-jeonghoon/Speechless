@@ -53,6 +53,9 @@ public class InterviewInfo extends BaseTimeEntity {
     @Column(name = "pronunciation_score")
     private Integer pronunciationScore;
 
+    @Column(name = "pronunciation_graph")
+    private String pronunciationGraph;
+
     @Column(name = "face_score")
     private Integer faceScore;
 
