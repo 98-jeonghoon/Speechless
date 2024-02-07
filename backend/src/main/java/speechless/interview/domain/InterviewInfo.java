@@ -24,6 +24,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import speechless.common.entity.BaseTimeEntity;
 import speechless.member.domain.Member;
 
@@ -59,8 +60,13 @@ public class InterviewInfo extends BaseTimeEntity {
     @Column(name = "face_score")
     private Integer faceScore;
 
-    @Column(name="face_graph")
+    @Column(name = "face_graph")
     private String faceGraph;
+
+    @Column(name = "is_completion")
+    @Builder.Default
+    @ColumnDefault("0")
+    private boolean isCompletion = false;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "start_time")
