@@ -65,7 +65,6 @@ public class InterviewInfo extends BaseTimeEntity {
 
     @Column(name = "is_completion")
     @Builder.Default
-    @ColumnDefault("0")
     private boolean isCompletion = false;
 
     @Temporal(TemporalType.TIMESTAMP)
