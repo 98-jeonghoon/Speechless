@@ -5,5 +5,5 @@ import speechless.common.error.ErrorCode;
 import speechless.common.error.SpeechlessException;
 
 public class CommunityNotFoundException extends SpeechlessException {
-    public CommunityNotFoundException() {super(new ErrorCode(HttpStatus.NOT_FOUND, "커뮤니티를 찾을 수 없습니다."));}
+    public CommunityNotFoundException() {super(new ErrorCode(HttpStatus.BAD_REQUEST, "커뮤니티를 찾을 수 없습니다."));}
 }

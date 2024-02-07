@@ -14,6 +14,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import speechless.common.entity.BaseTimeEntity;
 import speechless.member.domain.Member;
 
 @Entity
@@ -22,7 +23,7 @@ import speechless.member.domain.Member;
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
-public class Participant {
+public class Participant extends BaseTimeEntity {
 
     @Id
     @Column(name = "id")
