@@ -26,7 +26,7 @@ export default function App() {
 						<Route path='/login' element={<LoginPage />} />
 						<Route path='/speech' element={<SpeechListPage />} />
 						<Route path='/speech/:id' element={<SpeechDetailPage />} />
-						<Route path='/speech/write' element={<SpeechCreatePage />} />
+						<Route path='/speech/write/:id?' element={<SpeechCreatePage />} />
 						<Route path='/mypage' element={<MyPage />} />
 						<Route path='/statement/write/:id?' element={<StatementWritePage />} />
 						<Route path='/statement/detail/:id' element={<StatementDetailPage />} />
