@@ -28,8 +28,10 @@ public class InterviewInfoService {
 
     public Long createInterviewInfo(AuthCredentials authCredentials, String topic)
         throws Exception {
+        Member loginMember = getMember(authCredentials);
 
         InterviewInfo interviewInfo = InterviewInfo.builder()
+            .member(loginMember)
             .startTime(LocalDateTime.now())
             .topic(topic).build();
 
@@ -70,8 +72,7 @@ public class InterviewInfoService {
             throw new PageException();
         }
 
-        Member loginMember = memberRepository.findById(authCredentials.id())
-            .orElseThrow(MemberNotFoundException::new);
+        Member loginMember = getMember(authCredentials);
 
         Page<InterviewInfo> interviewInfos = interviewRepository.findAllByMemberAndCompletionIsTrue(
             loginMember, PageRequest.of(pageNum, pageSize, Sort.by("id").descending()));
@@ -93,5 +94,10 @@ public class InterviewInfoService {
             interviewRepository.findByIdAndMember(id, loginMember)
                 .orElseThrow(InterviewNotFoundException::new));
 
+    }
+
+    private Member getMember(AuthCredentials authCredentials){
+        return memberRepository.findById(authCredentials.id())
+            .orElseThrow(MemberNotFoundException::new);
     }
 }
