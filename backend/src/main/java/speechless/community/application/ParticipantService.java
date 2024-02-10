@@ -2,7 +2,6 @@ package speechless.community.application;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import speechless.auth.dto.AuthCredentials;
@@ -28,8 +27,6 @@ public class ParticipantService {
     private final MemberRepository memberRepository;
     private final CommnunityRepository commnunityRepository;
 
-    private ParticipantRepository repository;
-
     public Participant createParticipant(AuthCredentials authCredentials, Long communityId)
         throws SpeechlessException {
         Member loginMember = getMember(authCredentials);
@@ -46,8 +43,8 @@ public class ParticipantService {
         throws SpeechlessException {
 
         Community community = getCommunity(communityId);
-        Participant participant = participantRepository.findByMemberAndCommunity(getMember(authCredentials), community);
-
+        Participant participant = participantRepository.findByMemberAndCommunity(getMember(authCredentials), community)
+            .orElseThrow(ParticipantNotFoundException::new);
         checkAuth(authCredentials, participant);
 
         participantRepository.delete(participant);

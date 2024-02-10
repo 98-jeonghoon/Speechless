@@ -13,7 +13,7 @@ import speechless.member.domain.Member;
 
 public interface ParticipantRepository extends JpaRepository<Participant, Long> {
 
-    Participant findByMemberAndCommunity(Member member, Community community);
+    Optional<Participant> findByMemberAndCommunity(Member member, Community community);
     @Query(value = "SELECT c FROM Participant p "
         + "JOIN Member m "
         + "ON m = :member "

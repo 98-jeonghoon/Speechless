@@ -48,15 +48,16 @@ public class InterviewInfoService {
         interviewRepository.save(interviewInfo);
     }
 
-    public List<InterviewInfoResponse> getInterviewInfos(AuthCredentials authCredentials) {
+  public List<InterviewInfoResponse> getInterviewInfos(AuthCredentials authCredentials) {
 
-        Member loginMember = getMember(authCredentials);
+    Member loginMember = getMember(authCredentials);
 
-        List<InterviewInfo> interviewInfos = interviewRepository.findAllByMember(loginMember);
-        return interviewInfos.stream().map(InterviewInfoMapper.INSTANCE::toResponse).toList();
-    }
+    List<InterviewInfo> interviewInfos = interviewRepository.findAllByMember(loginMember);
+    return interviewInfos.stream().map(InterviewInfoMapper.INSTANCE::toResponse).toList();
+  }
 
-    public InterviewInfoResponse getInterviewInfo(AuthCredentials authCredentials, Long id) {
+
+  public InterviewInfoResponse getInterviewInfo(AuthCredentials authCredentials, Long id) {
 
         Member loginMember = memberRepository.findById(authCredentials.id())
             .orElseThrow(MemberNotFoundException::new);
