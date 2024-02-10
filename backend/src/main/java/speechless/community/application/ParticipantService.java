@@ -2,7 +2,6 @@ package speechless.community.application;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import speechless.auth.dto.AuthCredentials;
@@ -10,7 +9,7 @@ import speechless.common.error.SpeechlessException;
 import speechless.community.domain.Community;
 import speechless.community.domain.Participant;
 import speechless.community.domain.mapper.ParticipantMapper;
-import speechless.community.domain.repository.CommnunityRepository;
+import speechless.community.domain.repository.CommunityRepository;
 import speechless.community.domain.repository.ParticipantRepository;
 import speechless.community.dto.response.ParticipantCommunityResponse;
 import speechless.community.exception.CommunityNotFoundException;
@@ -26,9 +25,7 @@ public class ParticipantService {
 
     private final ParticipantRepository participantRepository;
     private final MemberRepository memberRepository;
-    private final CommnunityRepository commnunityRepository;
-
-    private ParticipantRepository repository;
+    private final CommunityRepository commnunityRepository;
 
     public Participant createParticipant(AuthCredentials authCredentials, Long communityId)
         throws SpeechlessException {
