@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import {type CommunityResponse, CommunityView} from "../../types/Community.ts";
 import { useParams, useNavigate } from 'react-router-dom';
 import { useLocalAxios } from '../../utils/axios';
-
+import {useAuthStore} from "../../stores/auth.ts";
+import { AxiosError } from 'axios';
 
 export const SpeechDetailPage = () => {
   const [speechDetail, setSpeechDetail] = useState<CommunityView | null>(null);
@@ -10,10 +11,14 @@ export const SpeechDetailPage = () => {
   const localAxiosWithAuth = useLocalAxios();
   const navigate = useNavigate();
 
+  const { name: userName } = useAuthStore(state => ({
+    name: state.name,
+  }));
+
   const updateSpeech = async () => {
     navigate(`/speech/write/${id}`);
   };
-
+  const isOwner = userName === speechDetail?.writer;
   //형 변환 할 것들(date...)
   useEffect(() => {
     const fetchData = async () => {
@@ -36,6 +41,8 @@ export const SpeechDetailPage = () => {
     fetchData();
   }, []);
 
+
+
   const deleteSpeech = async () => {
     const confirmDelete = window.confirm('정말로 글을 삭제하시겠습니까?');
     if (confirmDelete) {
@@ -51,13 +58,18 @@ export const SpeechDetailPage = () => {
   };
 
   const joinGroup = async () => {
-    console.log(id);
     try {
       const res = await localAxiosWithAuth.post(`/participant/${id}`);
-    }catch (err){
-      console.log("err ", err)
-    }finally {
-      console.log("fin")
+      alert('그룹 참여 완료');
+    } catch (error) {
+      const err = error as AxiosError;
+      if (err.response && err.response.status === 400) {
+        alert('이미 가입한 그룹입니다');
+      } else {
+        console.error("Error: ", err.message);
+      }
+    } finally {
+      console.log("Fin");
     }
   };
 
@@ -138,17 +150,21 @@ export const SpeechDetailPage = () => {
                   <p className='text-gray-700'>{speechDetail.content}</p>
                 </div>
                 <div className="">
-                  <button onClick={updateSpeech}
-                          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded "
-                  >
-                    글 수정
-                  </button>
-                  <button
-                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                      onClick={deleteSpeech}
-                  >
-                    글 삭제
-                  </button>
+                  {isOwner && (
+                      <div>
+                          <button onClick={updateSpeech}
+                                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded "
+                          >
+                            글 수정
+                          </button>
+                          <button
+                              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                              onClick={deleteSpeech}
+                          >
+                            글 삭제
+                          </button>
+                      </div>
+                )}
                 </div>
               </div>
             </div>

@@ -152,7 +152,7 @@ export const SpeechCreatePage = () => {
                             카테고리
                         </p>
                         <div className="flex flex-wrap gap-2 justify-center">
-                            {['자유주제', '자기소개', 'IT', '인문', '언어', '사회', '역사', '과학', '디자인', '교육', '의예', '예체능', '오락', '기타'].map((category) => (
+                            {['자유주제', '자기소개', 'IT', '인문', '언어', '사회', '역사', '과학', '디자인', '교육', '의예', '예체능'].map((category) => (
                                 <button
                                     key={category}
                                     className={classNames(

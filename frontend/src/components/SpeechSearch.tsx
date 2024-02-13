@@ -76,9 +76,8 @@ export const SpeechSearch: React.FC<SpeechSearchProps> = ({ onSearch }) => {
                         <option value="교육">교육</option>
                         <option value="의예">의예</option>
                         <option value="예체능">예체능</option>
-                        <option value="기타">기타</option>
                         <option value="자기소개">자기소개</option>
-                        <option value="자유">자유</option>
+                        <option value="자유주제">자유주제</option>
                     </select>
                     <label>
                         <input
