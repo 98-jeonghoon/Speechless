@@ -21,72 +21,78 @@ const awaitingSpeechSessions: CommunityView[] = [
 		writer: '김민수',
 		category: 'IT',
 		title: 'IT 자유주제 5분 스피치',
-		content: '안녕하세요. 싸피 6기 김민수입니다. 이번에 IT 자유주제 5분 스피치를 진행하려고 합니다. 자유주제라서 뭐든지 다 가능합니다. 자유롭게 말씀해주세요.',
+		content:
+			'안녕하세요. 싸피 6기 김민수입니다. 이번에 IT 자유주제 5분 스피치를 진행하려고 합니다. 자유주제라서 뭐든지 다 가능합니다. 자유롭게 말씀해주세요.',
 		maxParticipants: 8,
 		deadline: new Date(),
 		sessionStart: new Date(),
 		createdAt: new Date(),
-		hit: 0
+		hit: 0,
 	},
 	{
 		id: 2,
 		writer: '김수',
 		category: 'IT',
 		title: 'IT 자유주제 5분 스피치',
-		content: '안녕하세요. 싸피 6기 김민수입니다. 이번에 IT 자유주제 5분 스피치를 진행하려고 합니다. 자유주제라서 뭐든지 다 가능합니다. 자유롭게 말씀해주세요.',
+		content:
+			'안녕하세요. 싸피 6기 김민수입니다. 이번에 IT 자유주제 5분 스피치를 진행하려고 합니다. 자유주제라서 뭐든지 다 가능합니다. 자유롭게 말씀해주세요.',
 		maxParticipants: 6,
 		deadline: new Date(),
 		sessionStart: new Date(),
 		createdAt: new Date(),
-		hit: 0
+		hit: 0,
 	},
 	{
 		id: 3,
 		writer: '민수',
 		category: '자기소개',
 		title: '자기소개 5분 스피치',
-		content: '안녕하세요. 싸피 6기 김민수입니다. 이번에 IT 자유주제 5분 스피치를 진행하려고 합니다. 자유주제라서 뭐든지 다 가능합니다. 자유롭게 말씀해주세요.',
+		content:
+			'안녕하세요. 싸피 6기 김민수입니다. 이번에 IT 자유주제 5분 스피치를 진행하려고 합니다. 자유주제라서 뭐든지 다 가능합니다. 자유롭게 말씀해주세요.',
 		maxParticipants: 8,
 		deadline: new Date(),
 		sessionStart: new Date(),
 		createdAt: new Date(),
-		hit: 0
+		hit: 0,
 	},
 	{
 		id: 4,
 		writer: '김민수',
 		category: 'IT',
 		title: '자유주제 5분 스피치',
-		content: '싸피 6기 김민수입니다. 이번에 IT 자유주제 5분 스피치를 진행하려고 합니다. 자유주제라서 뭐든지 다 가능합니다. 자유롭게 말씀해주세요.',
+		content:
+			'싸피 6기 김민수입니다. 이번에 IT 자유주제 5분 스피치를 진행하려고 합니다. 자유주제라서 뭐든지 다 가능합니다. 자유롭게 말씀해주세요.',
 		maxParticipants: 8,
 		deadline: new Date(),
 		sessionStart: new Date(),
 		createdAt: new Date(),
-		hit: 0
+		hit: 0,
 	},
 	{
 		id: 5,
 		writer: '김민수',
 		category: 'IT',
 		title: 'IT 자유주제 5분 스피치',
-		content: '안녕하세요. 싸피 6기 김민수입니다. 이번에 IT 자유주제 5분 스피치를 진행하려고 합니다. 자유주제라서 뭐든지 다 가능합니다. 자유롭게 말씀해주세요.',
+		content:
+			'안녕하세요. 싸피 6기 김민수입니다. 이번에 IT 자유주제 5분 스피치를 진행하려고 합니다. 자유주제라서 뭐든지 다 가능합니다. 자유롭게 말씀해주세요.',
 		maxParticipants: 8,
 		deadline: new Date(),
 		sessionStart: new Date(),
 		createdAt: new Date(),
-		hit: 0
+		hit: 0,
 	},
 	{
 		id: 6,
 		writer: '김민수',
 		category: 'IT',
 		title: 'IT 자유주제 5분 스피치',
-		content: '안녕하세요. 싸피 6기 김민수입니다. 이번에 IT 자유주제 5분 스피치를 진행하려고 합니다. 자유주제라서 뭐든지 다 가능합니다. 자유롭게 말씀해주세요.',
+		content:
+			'안녕하세요. 싸피 6기 김민수입니다. 이번에 IT 자유주제 5분 스피치를 진행하려고 합니다. 자유주제라서 뭐든지 다 가능합니다. 자유롭게 말씀해주세요.',
 		maxParticipants: 8,
 		deadline: new Date(),
 		sessionStart: new Date(),
 		createdAt: new Date(),
-		hit: 0
+		hit: 0,
 	},
 ];
 //
@@ -98,28 +104,31 @@ export const IndexPage = () => {
 	const limit = 10;
 
 	useEffect(() => {
-		localAxiosWithAuth.get('/community/popular', {
-			params: {
-				limit },
-		})
+		localAxiosWithAuth
+			.get('/community/popular', {
+				params: {
+					limit,
+				},
+			})
 			.then((res) => {
-				console.log("ㄱㄱ")
+				console.log('ㄱㄱ');
 				// TODO: 백엔드에서 받은 response로 글을 채워준다
-				const communityData: CommunityView[] = res.data.getCommunityResponses.map((communityView: CommunityResponse) => {
-					return {
-						...communityView,
-						sessionStart: new Date(communityView.sessionStart),
-						deadline: new Date(communityView.deadline),
-						createdAt: new Date(communityView.createdAt)
-					};
-				});
+				const communityData: CommunityView[] = res.data.getCommunityResponses.map(
+					(communityView: CommunityResponse) => {
+						return {
+							...communityView,
+							sessionStart: new Date(communityView.sessionStart),
+							deadline: new Date(communityView.deadline),
+							createdAt: new Date(communityView.createdAt),
+						};
+					},
+				);
 
-				setSpeechSessions(communityData.slice(0,4));
-
+				setSpeechSessions(communityData.slice(0, 4));
 			})
 			.catch((err) => {
 				// TODO: 백엔드 response가 없어서 무조건 에러가 날 것이므로 임시로 더미 데이터를 넣어준다
-				setSpeechSessions(awaitingSpeechSessions.slice(0,4));
+				setSpeechSessions(awaitingSpeechSessions.slice(0, 4));
 			});
 
 		//axios.get("/kakao");
@@ -127,7 +136,7 @@ export const IndexPage = () => {
 
 	return (
 		<>
-			<div className="relative h-56 sm:h-64 xl:h-80 2xl:h-96 mb-8">
+			<div className='relative h-56 sm:h-64 xl:h-80 2xl:h-96 mb-8'>
 				<Carousel slideInterval={5000}>
 					<img src={Banner1} alt='banner1' className='w-full h-full object-cover' />
 					<img src={Banner2} alt='banner2' className='w-full h-full object-cover' />
@@ -149,9 +158,7 @@ export const IndexPage = () => {
 										</p>
 									</div>
 									<div className='flex flex-col justify-between items-center'>
-										<p className='text-sm font-semibold'>
-											/ {session.maxParticipants}
-										</p>
+										<p className='text-sm font-semibold'>/ {session.maxParticipants}</p>
 										<Button size='xs' color='purple' disabled>
 											참여하기
 										</Button>
@@ -164,7 +171,7 @@ export const IndexPage = () => {
 				</TitledCard>
 				<TitledCard title='일정'>
 					<div className='flex flex-col justify-center h-full'>
-						<Calendar/>
+						<Calendar />
 					</div>
 				</TitledCard>
 			</div>
@@ -178,7 +185,7 @@ export const IndexPage = () => {
 
 						return (
 							<button key={session.id} onClick={handleClick}>
-								<RecruitCard session={session}/>
+								<RecruitCard session={session} />
 							</button>
 						);
 					})}
