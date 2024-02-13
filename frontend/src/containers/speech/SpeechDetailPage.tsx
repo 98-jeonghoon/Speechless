@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {type CommunityResponse, CommunityView} from "../../types/Community.ts";
 import { useParams, useNavigate } from 'react-router-dom';
 import { useLocalAxios } from '../../utils/axios';
+import { useSpeechSessionStore } from '../../stores/session.ts';
 
 
 export const SpeechDetailPage = () => {
@@ -13,6 +14,8 @@ export const SpeechDetailPage = () => {
   const updateSpeech = async () => {
     navigate(`/speech/write/${id}`);
   };
+
+  const speechSessionStore = useSpeechSessionStore();
 
   //형 변환 할 것들(date...)
   useEffect(() => {
@@ -62,13 +65,24 @@ export const SpeechDetailPage = () => {
   };
 
   const moveSpeech = async  () => {
-    try {
-      const res = await localAxiosWithAuth.get('/');
-    }catch (err){
-      console.log("err ", err)
-    }finally {
-      console.log("fin")
-    }
+    const response = await localAxiosWithAuth.post('openvidu/announcement', {
+			topic: speechDetail?.title,
+      communityId: speechDetail?.id
+		});
+
+		if (speechSessionStore.sessionId) {
+			try {
+				await localAxiosWithAuth.delete(`openvidu/sessions/${speechSessionStore.sessionId}`);
+			} catch (e) {
+				console.log("session deletion failed");
+			}
+
+			speechSessionStore.clearSession();
+		}
+
+		speechSessionStore.setSessionId(response.data);
+
+		navigate('/session/speech');
   }
 
   const deleteGroup = async  () => {

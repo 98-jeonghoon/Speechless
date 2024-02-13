@@ -264,6 +264,16 @@ export const InterviewPage = () => {
 		}
 	};
 
+	const disconnectAndQuit = () => {
+		session?.disconnect();
+		setSession(null);
+		setMainStreamManager(null);
+		setPublisher(null);
+		setSubscribers([]);
+		interviewSessionStore.clearSession();
+		navigate('/interview');
+	}
+
 
 	/*
 	* face-api 기능 --------------------------------------------------
@@ -529,13 +539,7 @@ export const InterviewPage = () => {
 		},
 		)
 		.then(() => {
-			session?.disconnect();
-			setSession(null);
-			setMainStreamManager(null);
-			setPublisher(null);
-			setSubscribers([]);
-			interviewSessionStore.clearSession();
-			navigate('/interview');
+			disconnectAndQuit();
 		})
 		.catch((error) => {
 			console.log(error);
@@ -565,7 +569,7 @@ export const InterviewPage = () => {
 		<div className='w-[100vw] h-[100vh] bg-gradient-to-b from-white to-gray-200 flex flex-col items-center'>
 			<div className='p-10 w-[90vw] h-[80vh]'>
 				<div className='session-header flex justify-end'>
-					<CustomButton onClick={()=>{navigate('/interview')}} size='lg' color='negative' className='mr-12'>
+					<CustomButton onClick={disconnectAndQuit} size='lg' color='negative' className='mr-12'>
 						면접 종료
 					</CustomButton>
 				</div>
