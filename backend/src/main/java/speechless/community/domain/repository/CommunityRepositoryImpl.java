@@ -67,7 +67,7 @@ public class CommunityRepositoryImpl implements CustomCommunityRepository{
     }
 
     private BooleanExpression isRecruiting() {
-        Date now = Date.from(java.time.Instant.now());
+        Date now = new Date();
         System.out.println(now);
         QCommunity community = QCommunity.community;
         return community.sessionStart.loe(now)
