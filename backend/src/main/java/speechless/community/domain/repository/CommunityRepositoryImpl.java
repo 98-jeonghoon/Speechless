@@ -115,7 +115,10 @@ public class CommunityRepositoryImpl implements CustomCommunityRepository{
 
     public List<Community> findPopularCommunities() {
         QCommunity community = QCommunity.community;
-        BooleanExpression predicate = community.isDeleted.isFalse();
+        Date now = new Date();
+        BooleanExpression predicate = community.isDeleted.isFalse()
+                .and(community.sessionStart.loe(now))
+                .and(community.deadline.goe(now));
 
         return queryFactory.selectFrom(community)
                 .where(predicate)
