@@ -1,7 +1,6 @@
 package speechless.community.domain.repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
@@ -9,11 +8,6 @@ import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import speechless.community.domain.Community;
 import speechless.community.domain.QCommunity;
-
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -73,18 +67,10 @@ public class CommunityRepositoryImpl implements CustomCommunityRepository{
     }
 
     private BooleanExpression isRecruiting() {
-        LocalDateTime nowLocalDateTime = LocalDateTime.now();
-        ZonedDateTime zonedDateTime = nowLocalDateTime.atZone(ZoneId.systemDefault());
-        Date now = Date.from(zonedDateTime.toInstant());
-
-        System.out.println("현재 시간 (Date): " + now);
+        Date now = new Date();
         QCommunity community = QCommunity.community;
-
-
-        return community.sessionStart.loe(now)
-                .and(community.deadline.goe(now));
+        return community.deadline.goe(now);
     }
-
     private BooleanExpression maxParticipantsEquals(Integer maxParticipants) {
         return Optional.ofNullable(maxParticipants)
                 .filter(max -> max > 0)
@@ -123,16 +109,14 @@ public class CommunityRepositoryImpl implements CustomCommunityRepository{
 
 
     public List<Community> findPopularCommunities() {
-
         QCommunity community = QCommunity.community;
-        System.out.println(Expressions.currentTimestamp());
-        System.out.println(community.sessionStart);
-        System.out.println(community.deadline);
+        BooleanExpression predicate = community.isDeleted.isFalse()
+                .and(isRecruiting());
+
         return queryFactory.selectFrom(community)
-                .where(Expressions.currentTimestamp().between(community.sessionStart, community.deadline))
+                .where(predicate)
                 .orderBy(community.hit.desc(), community.id.desc())
                 .limit(8)
                 .fetch();
     }
-
 }
