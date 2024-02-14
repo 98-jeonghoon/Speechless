@@ -1,6 +1,7 @@
 package speechless.community.domain.repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
@@ -12,6 +13,7 @@ import speechless.community.domain.QCommunity;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -78,7 +80,7 @@ public class CommunityRepositoryImpl implements CustomCommunityRepository{
         System.out.println("현재 시간 (Date): " + now);
         QCommunity community = QCommunity.community;
 
-        // Querydsl 조건에 현재 시간을 사용
+
         return community.sessionStart.loe(now)
                 .and(community.deadline.goe(now));
     }
@@ -121,13 +123,13 @@ public class CommunityRepositoryImpl implements CustomCommunityRepository{
 
 
     public List<Community> findPopularCommunities() {
-        QCommunity community = QCommunity.community;
-        BooleanExpression predicate = isRecruiting();
 
+        QCommunity community = QCommunity.community;
         return queryFactory.selectFrom(community)
-                .where(predicate)
+                .where(Expressions.currentTimestamp().between(community.sessionStart, community.deadline))
                 .orderBy(community.hit.desc(), community.id.desc())
                 .limit(8)
                 .fetch();
     }
+
 }
