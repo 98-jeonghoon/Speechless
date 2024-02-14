@@ -8,6 +8,10 @@ import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import speechless.community.domain.Community;
 import speechless.community.domain.QCommunity;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -67,12 +71,18 @@ public class CommunityRepositoryImpl implements CustomCommunityRepository{
     }
 
     private BooleanExpression isRecruiting() {
-        Date now = new Date();
-        System.out.println(now);
+        LocalDateTime nowLocalDateTime = LocalDateTime.now();
+        ZonedDateTime zonedDateTime = nowLocalDateTime.atZone(ZoneId.systemDefault());
+        Date now = Date.from(zonedDateTime.toInstant());
+
+        System.out.println("현재 시간 (Date): " + now);
         QCommunity community = QCommunity.community;
+
+        // Querydsl 조건에 현재 시간을 사용
         return community.sessionStart.loe(now)
                 .and(community.deadline.goe(now));
     }
+
     private BooleanExpression maxParticipantsEquals(Integer maxParticipants) {
         return Optional.ofNullable(maxParticipants)
                 .filter(max -> max > 0)
