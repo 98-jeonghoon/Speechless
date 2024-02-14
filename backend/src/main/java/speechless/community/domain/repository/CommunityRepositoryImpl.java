@@ -69,8 +69,7 @@ public class CommunityRepositoryImpl implements CustomCommunityRepository{
     private BooleanExpression isRecruiting() {
         Date now = new Date();
         QCommunity community = QCommunity.community;
-        return community.sessionStart.loe(now)
-                .and(community.deadline.goe(now));
+        return community.deadline.goe(now);
     }
     private BooleanExpression maxParticipantsEquals(Integer maxParticipants) {
         return Optional.ofNullable(maxParticipants)
