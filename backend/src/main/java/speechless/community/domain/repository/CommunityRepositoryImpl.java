@@ -125,6 +125,9 @@ public class CommunityRepositoryImpl implements CustomCommunityRepository{
     public List<Community> findPopularCommunities() {
 
         QCommunity community = QCommunity.community;
+        System.out.println(Expressions.currentTimestamp());
+        System.out.println(community.sessionStart);
+        System.out.println(community.deadline);
         return queryFactory.selectFrom(community)
                 .where(Expressions.currentTimestamp().between(community.sessionStart, community.deadline))
                 .orderBy(community.hit.desc(), community.id.desc())
